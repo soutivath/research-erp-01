@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HAL ERP Deep Development Workflow</title>
+  <style>
+    :root {
+      --page: #eef2f6;
+      --paper: #ffffff;
+      --ink: #101828;
+      --text: #344054;
+      --muted: #667085;
+      --line: #d7dee8;
+      --navy: #172554;
+      --blue: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --teal: #0f766e;
+      --teal-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b42318;
+      --red-soft: #fff1f3;
+      --purple: #6d28d9;
+      --purple-soft: #f5f3ff;
+      --slate-soft: #f8fafc;
+      --shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(215, 222, 232, 0.75) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(215, 222, 232, 0.75) 1px, transparent 1px),
+        var(--page);
+      background-size: 42px 42px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .report {
+      width: min(1220px, calc(100% - 36px));
+      margin: 34px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .cover {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 34px;
+      padding: 48px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff 0%, #f7fbff 62%, #eef6f5 100%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin: 0 0 14px;
+      padding: 6px 10px;
+      border: 1px solid #bfdbfe;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 60px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin: 18px 0 0;
+      color: var(--text);
+      font-size: 19px;
+    }
+
+    .verdict {
+      display: grid;
+      gap: 12px;
+      padding: 20px;
+      border: 1px solid #bbf7d0;
+      background: rgba(236, 253, 245, 0.9);
+    }
+
+    .verdict h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .verdict p {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .status {
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .status b {
+      display: block;
+      color: var(--blue);
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .status span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    section {
+      padding: 38px 48px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-of-type {
+      border-bottom: 0;
+    }
+
+    .section-title {
+      max-width: 850px;
+      margin-bottom: 24px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .section-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .flow {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 68px minmax(220px, 0.9fr) minmax(0, 1.4fr) minmax(230px, 0.85fr);
+      gap: 16px;
+      align-items: stretch;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(16, 24, 40, 0.06);
+    }
+
+    .stage-no {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .stage h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .stage p {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .mini-label {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .steps {
+      display: grid;
+      gap: 8px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 10px;
+      min-height: 44px;
+      align-items: center;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      background: var(--slate-soft);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .step span {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .gate {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      padding: 14px;
+      border: 1px solid #fed7aa;
+      border-left: 5px solid var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .gate b {
+      display: block;
+      color: var(--amber);
+    }
+
+    .gate ul,
+    .check-list ul,
+    .risk ul {
+      margin: 0;
+      padding-left: 19px;
+      color: var(--text);
+    }
+
+    .gate li,
+    .check-list li,
+    .risk li {
+      margin: 5px 0;
+    }
+
+    .swimlanes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .lane h3 {
+      margin: 0;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--slate-soft);
+      font-size: 18px;
+    }
+
+    .lane ul {
+      margin: 0;
+      padding: 14px 18px 16px 32px;
+      color: var(--text);
+    }
+
+    .lane li {
+      margin: 7px 0;
+    }
+
+    .validation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .check-list,
+    .risk {
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .check-list.good {
+      border-left: 5px solid var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .check-list.watch {
+      border-left: 5px solid var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .check-list.next {
+      border-left: 5px solid var(--purple);
+      background: var(--purple-soft);
+    }
+
+    .check-list h3,
+    .risk h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .milestone {
+      min-height: 132px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .milestone span {
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .milestone h3 {
+      margin: 8px 0 6px;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .milestone p {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 48px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--slate-soft);
+    }
+
+    .top-nav {
+      display: flex;
+      gap: 10px;
+      padding: 14px 48px;
+      border-bottom: 1px solid var(--line);
+      background: var(--slate-soft);
+    }
+
+    .top-nav a {
+      display: inline-flex;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .top-nav a[aria-current="page"] {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    @media (max-width: 1040px) {
+      .cover,
+      .stage,
+      .swimlanes,
+      .validation-grid,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .status-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .report {
+        width: 100%;
+        margin: 0;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .cover,
+      section,
+      footer,
+      .top-nav {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        display: block;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .report {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      .stage,
+      .lane,
+      .check-list,
+      .milestone {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report">
+    <nav class="top-nav" aria-label="Report navigation">
+      <a href="index.html">Development plan</a>
+      <a href="workflow.html" aria-current="page">Deep workflow</a>
+    </nav>
+    <header class="cover">
+      <div>
+        <p class="eyebrow">Deep Workflow Validation</p>
+        <h1>HAL ERP Real-World Development Workflow</h1>
+        <p class="lead">
+          A boss-facing operating flow for how the new web system should move from setup, to purchase request, to approval, to purchase order, to receipt, and finally management reporting.
+        </p>
+        <div class="status-grid">
+          <div class="status"><b>6</b><span>business stages</span></div>
+          <div class="status"><b>4</b><span>control gates</span></div>
+          <div class="status"><b>43</b><span>supporting functions</span></div>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <h2>Executive Answer</h2>
+        <p>
+          The workflow is correct for a real procurement and budget-control system if each transaction is blocked until the required setup, quota, budget, and approval checks are complete.
+        </p>
+        <p>
+          The main area to confirm with management is whether vendor comparison must happen before purchase order creation or during purchase order preparation.
+        </p>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-title">
+        <h2>End-To-End Operating Flow</h2>
+        <p>This is the real business movement the development should follow. Each stage shows what the user does, what the system controls, and what must be true before the work can continue.</p>
+      </div>
+
+      <div class="flow">
+        <article class="stage">
+          <div><div class="stage-no">1</div></div>
+          <div>
+            <h3>Foundation Setup</h3>
+            <p>Build the operating base before anyone can request, approve, buy, or receive goods.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>Company, department, position, and province setup</div>
+              <div class="step"><span>2</span>User, role, permission, and department assignment</div>
+              <div class="step"><span>3</span>Vendor, product, product unit, VAT, currency, bank, exchange rate</div>
+              <div class="step"><span>4</span>Budget account, budget item, and budget detail setup</div>
+              <div class="step"><span>5</span>Approval workflow, approval levels, and approver assignment</div>
+              <div class="step"><span>6</span>Company product quantity quota setup</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Control gate</b>
+            <ul>
+              <li>Approvers must be defined.</li>
+              <li>Department must have a budget.</li>
+              <li>Product quota must exist before request items are submitted.</li>
+              <li>Document workflow must be approved before transactions use it.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div><div class="stage-no">2</div></div>
+          <div>
+            <h3>Purchase Request</h3>
+            <p>The requester asks for goods or services, linked to department, document, quota, and budget context.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>Requester creates document and purchase request number</div>
+              <div class="step"><span>2</span>Select product quota and unit</div>
+              <div class="step"><span>3</span>Enter quantity, price, reason, and attachments</div>
+              <div class="step"><span>4</span>System checks department budget exists</div>
+              <div class="step"><span>5</span>System checks requested quantity against remaining quota</div>
+              <div class="step"><span>6</span>System opens approval request and notifies approver</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Control gate</b>
+            <ul>
+              <li>Request date must be valid.</li>
+              <li>Quota cannot be exceeded.</li>
+              <li>Department budget must exist.</li>
+              <li>Request cannot move to purchase order until approved.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div><div class="stage-no">3</div></div>
+          <div>
+            <h3>Purchase Request Approval</h3>
+            <p>The business confirms the request is needed, appropriate, and allowed before procurement work continues.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>Approver receives request notification</div>
+              <div class="step"><span>2</span>Approver reviews requester, department, items, quantity, and reason</div>
+              <div class="step"><span>3</span>Approver approves, rejects, or requests correction</div>
+              <div class="step"><span>4</span>Approved request becomes available for purchase order</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Decision point</b>
+            <ul>
+              <li>If approved: continue to purchase order.</li>
+              <li>If rejected: stop the procurement flow.</li>
+              <li>If correction is needed: requester updates and resubmits.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div><div class="stage-no">4</div></div>
+          <div>
+            <h3>Purchase Order</h3>
+            <p>Procurement converts an approved request into a supplier-facing order with vendor, price, VAT, bank, and budget details.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>Select approved purchase request</div>
+              <div class="step"><span>2</span>Create purchase order document and purchase order number</div>
+              <div class="step"><span>3</span>Copy approved request items into purchase order items</div>
+              <div class="step"><span>4</span>Set price, VAT, selected vendor, and vendor bank account</div>
+              <div class="step"><span>5</span>Attach supplier documents or quotation files when needed</div>
+              <div class="step"><span>6</span>Assign budget item for spending control</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Control gate</b>
+            <ul>
+              <li>Purchase request must already be approved.</li>
+              <li>Selected vendor cannot be duplicated for the same item.</li>
+              <li>Vendor bank account must belong to the selected vendor.</li>
+              <li>Budget item must be assigned before receipt/payment control.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div><div class="stage-no">5</div></div>
+          <div>
+            <h3>Purchase Order Approval</h3>
+            <p>The business confirms the selected vendor, pricing, VAT, and spending line before receiving goods.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>System opens purchase order approval</div>
+              <div class="step"><span>2</span>Approver reviews selected vendor and order value</div>
+              <div class="step"><span>3</span>Approver reviews budget item and supporting files</div>
+              <div class="step"><span>4</span>Approved purchase order becomes available for receipt</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Decision point</b>
+            <ul>
+              <li>If approved: continue to receipt.</li>
+              <li>If rejected: procurement must correct or stop the order.</li>
+              <li>If budget assignment is missing: finance/procurement must complete it.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div><div class="stage-no">6</div></div>
+          <div>
+            <h3>Receipt and Management Reporting</h3>
+            <p>Receiving records the delivered goods, payment currency, exchange rate, and final amount for visibility and reporting.</p>
+          </div>
+          <div>
+            <p class="mini-label">Workflow</p>
+            <div class="steps">
+              <div class="step"><span>1</span>Create receipt from approved purchase order</div>
+              <div class="step"><span>2</span>Select received purchase order items</div>
+              <div class="step"><span>3</span>System checks vendor bank account and exchange rate</div>
+              <div class="step"><span>4</span>System calculates payment total in budget currency</div>
+              <div class="step"><span>5</span>Receipt enters approval workflow</div>
+              <div class="step"><span>6</span>Management reviews company summary, budget status, requests, orders, and receipts</div>
+            </div>
+          </div>
+          <div class="gate">
+            <b>Control gate</b>
+            <ul>
+              <li>Purchase order must be approved before receipt.</li>
+              <li>Exchange rate must exist and be active.</li>
+              <li>Receipt should confirm actual received quantity.</li>
+              <li>Reports should show request, order, receipt, and budget status.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Who Does What</h2>
+        <p>This view helps management understand ownership. The system is not only screens; it is a controlled handoff between departments.</p>
+      </div>
+
+      <div class="swimlanes">
+        <article class="lane">
+          <h3>Requester / Department</h3>
+          <ul>
+            <li>Creates purchase request.</li>
+            <li>Provides reason, quantity, item detail, and supporting file.</li>
+            <li>Corrects rejected or returned requests.</li>
+            <li>Confirms business need before procurement starts.</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3>Approver / Management</h3>
+          <ul>
+            <li>Reviews purchase request.</li>
+            <li>Reviews purchase order value and vendor selection.</li>
+            <li>Reviews receipt where approval is required.</li>
+            <li>Uses reports to monitor budget and procurement movement.</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3>Procurement / Finance</h3>
+          <ul>
+            <li>Maintains vendors, products, VAT, currency, bank, and exchange rate.</li>
+            <li>Creates purchase orders from approved requests.</li>
+            <li>Selects vendor and vendor bank account.</li>
+            <li>Assigns budget item for spending control.</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3>System Control</h3>
+          <ul>
+            <li>Blocks unapproved workflow setup.</li>
+            <li>Blocks request when quota is exceeded.</li>
+            <li>Blocks purchase order when purchase request is not approved.</li>
+            <li>Blocks receipt when purchase order is not approved.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Real-World Fit Check</h2>
+        <p>This is the part to discuss with the boss. It separates what is already correct from what policy decisions may still be needed.</p>
+      </div>
+
+      <div class="validation-grid">
+        <article class="check-list good">
+          <h3>Correct Flow</h3>
+          <ul>
+            <li>Setup before transaction work is correct.</li>
+            <li>Purchase request before purchase order is correct.</li>
+            <li>Purchase order before receipt is correct.</li>
+            <li>Approval gates before each major movement are correct.</li>
+            <li>Budget and quota checks before spending are correct.</li>
+          </ul>
+        </article>
+        <article class="check-list watch">
+          <h3>Confirm With Boss</h3>
+          <ul>
+            <li>Should vendor comparison happen before purchase order or inside purchase order preparation?</li>
+            <li>Should receipt approval be required for every receipt or only above a value?</li>
+            <li>Should budget be reserved at purchase order approval or only counted when receipt is approved?</li>
+            <li>Should finance payment be a separate module after receipt?</li>
+          </ul>
+        </article>
+        <article class="check-list next">
+          <h3>Recommended Policy</h3>
+          <ul>
+            <li>Use purchase request approval to confirm business need.</li>
+            <li>Use purchase order approval to confirm vendor, price, and budget line.</li>
+            <li>Use receipt approval to confirm delivered goods and payment value.</li>
+            <li>Use reports to compare budget, ordered amount, received amount, and remaining balance.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Recommended Development Timeline</h2>
+        <p>Build in the same order as the real-world flow so every later screen has the master data and controls it needs.</p>
+      </div>
+
+      <div class="timeline">
+        <article class="milestone">
+          <span>Step 1</span>
+          <h3>Master setup</h3>
+          <p>Company, department, users, roles, vendors, products, currency, bank, VAT, exchange rates.</p>
+        </article>
+        <article class="milestone">
+          <span>Step 2</span>
+          <h3>Control setup</h3>
+          <p>Budget accounts, budget items, quota, approval workflows, approval levels, approvers.</p>
+        </article>
+        <article class="milestone">
+          <span>Step 3</span>
+          <h3>Purchase request</h3>
+          <p>Request document, item entry, attachment, quota check, budget existence check, PR approval.</p>
+        </article>
+        <article class="milestone">
+          <span>Step 4</span>
+          <h3>Purchase order</h3>
+          <p>Approved PR conversion, vendor selection, VAT, price, vendor bank account, budget item assignment.</p>
+        </article>
+        <article class="milestone">
+          <span>Step 5</span>
+          <h3>Receipt</h3>
+          <p>Approved PO receiving, exchange rate, payment amount, receipt approval, document record.</p>
+        </article>
+        <article class="milestone">
+          <span>Step 6</span>
+          <h3>Reports</h3>
+          <p>Company summary and budget status, purchase request report, purchase order report, receipt report.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>HAL ERP deep development workflow</span>
+      <span>Prepared for management discussion</span>
+    </footer>
+  </div>
+</body>
+</html>
