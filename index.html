@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HAL ERP Web Development Plan</title>
+  <style>
+    :root {
+      --page: #eef2f6;
+      --paper: #ffffff;
+      --ink: #101828;
+      --text: #344054;
+      --muted: #667085;
+      --line: #d7dee8;
+      --navy: #172554;
+      --blue: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --teal: #0f766e;
+      --teal-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --slate-soft: #f8fafc;
+      --shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(215, 222, 232, 0.7) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(215, 222, 232, 0.7) 1px, transparent 1px),
+        var(--page);
+      background-size: 42px 42px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .report {
+      width: min(1180px, calc(100% - 36px));
+      margin: 34px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .cover {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      gap: 34px;
+      padding: 48px;
+      background: linear-gradient(135deg, #ffffff 0%, #f7fbff 62%, #eef6f5 100%);
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(29, 78, 216, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(15, 118, 110, 0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .cover > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin: 0 0 14px;
+      padding: 6px 10px;
+      border: 1px solid #bfdbfe;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 18px 0 0;
+      color: var(--text);
+      font-size: 19px;
+    }
+
+    .hero-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .summary-chip {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      font-weight: 700;
+    }
+
+    .summary-chip strong {
+      color: var(--blue);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .system-map {
+      align-self: stretch;
+      display: grid;
+      gap: 12px;
+      padding: 20px;
+      border: 1px solid rgba(23, 37, 84, 0.14);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 18px 36px rgba(16, 24, 40, 0.08);
+    }
+
+    .map-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .map-title strong {
+      color: var(--navy);
+      font-size: 15px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .map-node {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--slate-soft);
+    }
+
+    .map-node span:first-child {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .map-node b {
+      display: block;
+      font-size: 15px;
+    }
+
+    .map-node em {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-style: normal;
+    }
+
+    .map-count {
+      color: var(--blue);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    section {
+      padding: 38px 48px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-of-type {
+      border-bottom: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .phase-list {
+      display: grid;
+      gap: 22px;
+    }
+
+    .phase-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(16, 24, 40, 0.06);
+    }
+
+    .phase-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 24px;
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .phase-title {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .phase-number {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: inset 0 -4px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .phase-title h3 {
+      margin: 0 0 5px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .phase-title p,
+    .result p,
+    .functions p {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .phase-meta {
+      min-width: 154px;
+      padding: 12px;
+      border: 1px solid #bfdbfe;
+      background: var(--blue-soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .phase-meta strong {
+      display: block;
+      color: var(--blue);
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .phase-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+      gap: 22px;
+      padding: 22px;
+    }
+
+    .workflow h4,
+    .functions h4,
+    .result h4 {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .steps {
+      display: grid;
+      gap: 8px;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .step span {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .functions {
+      padding: 18px;
+      border: 1px solid #bbf7d0;
+      border-left: 5px solid var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .functions ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text);
+    }
+
+    .functions li {
+      margin: 6px 0;
+    }
+
+    .result {
+      grid-column: 1 / -1;
+      padding: 16px 18px;
+      border: 1px solid #fed7aa;
+      border-left: 5px solid var(--amber);
+      background: var(--amber-soft);
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 48px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--slate-soft);
+    }
+
+    @media (max-width: 980px) {
+      .cover,
+      .phase-top,
+      .phase-body {
+        grid-template-columns: 1fr;
+      }
+
+      .system-map {
+        min-width: 0;
+      }
+
+      .phase-meta {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .report {
+        width: 100%;
+        margin: 0;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .cover,
+      section,
+      footer {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .map-node {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .map-count {
+        grid-column: 2;
+      }
+
+      footer {
+        display: block;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .report {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      .phase-card,
+      .system-map {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report">
+    <header class="cover">
+      <div>
+        <p class="eyebrow">Web Development Plan</p>
+        <h1>HAL ERP Workflow-Based Web Development Plan</h1>
+        <p class="lead">
+          A professional build plan for a new web system, organized into five business workflows and 43 supporting functions.
+        </p>
+        <div class="hero-summary">
+          <div class="summary-chip"><strong>5</strong> development modules</div>
+          <div class="summary-chip"><strong>43</strong> supporting functions</div>
+        </div>
+      </div>
+
+      <div class="system-map" aria-label="Development module overview">
+        <div class="map-title">
+          <strong>Build Sequence</strong>
+          <span>Workflow order</span>
+        </div>
+        <div class="map-node"><span>1</span><div><b>Organization setup</b><em>Structure, users, roles</em></div><div class="map-count">13</div></div>
+        <div class="map-node"><span>2</span><div><b>Procurement</b><em>Request to receipt</em></div><div class="map-count">14</div></div>
+        <div class="map-node"><span>3</span><div><b>Budget and approval</b><em>Control and approval levels</em></div><div class="map-count">8</div></div>
+        <div class="map-node"><span>4</span><div><b>Document records</b><em>Filing and status</em></div><div class="map-count">4</div></div>
+        <div class="map-node"><span>5</span><div><b>Management reporting</b><em>Review and visibility</em></div><div class="map-count">4</div></div>
+      </div>
+    </header>
+
+    <section>
+      <div class="phase-list">
+        <article class="phase-card">
+          <div class="phase-top">
+            <div class="phase-title">
+              <div class="phase-number">1</div>
+              <div>
+                <h3>Organization setup</h3>
+                <p>Build the foundation for company structure, users, access, departments, and assignments.</p>
+              </div>
+            </div>
+            <div class="phase-meta"><strong>13</strong> functions</div>
+          </div>
+          <div class="phase-body">
+            <div class="workflow">
+              <h4>Workflow</h4>
+              <div class="steps">
+                <div class="step"><span>1</span>Company setup</div>
+                <div class="step"><span>2</span>Department setup</div>
+                <div class="step"><span>3</span>User and role setup</div>
+                <div class="step"><span>4</span>Approver assignment</div>
+                <div class="step"><span>5</span>Company product quantity quota setup</div>
+              </div>
+            </div>
+            <div class="functions">
+              <h4>Function scope</h4>
+              <ul>
+                <li>User, role, permission</li>
+                <li>User approval and approval step</li>
+                <li>Company user, department user, department approver, position</li>
+                <li>Company, department, province, company product quantity quota</li>
+              </ul>
+            </div>
+            <div class="result">
+              <h4>Expected result</h4>
+              <p>Organization setup is ready before procurement and approval work begins.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card">
+          <div class="phase-top">
+            <div class="phase-title">
+              <div class="phase-number">2</div>
+              <div>
+                <h3>Procurement</h3>
+                <p>Build the daily purchasing flow from product and vendor setup to receiving.</p>
+              </div>
+            </div>
+            <div class="phase-meta"><strong>14</strong> functions</div>
+          </div>
+          <div class="phase-body">
+            <div class="workflow">
+              <h4>Workflow</h4>
+              <div class="steps">
+                <div class="step"><span>1</span>Product and vendor setup</div>
+                <div class="step"><span>2</span>Purchase request</div>
+                <div class="step"><span>3</span>Purchase order</div>
+                <div class="step"><span>4</span>Receipt</div>
+                <div class="step"><span>5</span>Finance reference data</div>
+              </div>
+            </div>
+            <div class="functions">
+              <h4>Function scope</h4>
+              <ul>
+                <li>Purchase request, purchase order, receipt</li>
+                <li>Vendor, vendor product, vendor bank account</li>
+                <li>Product, product type, category, unit</li>
+                <li>VAT, currency, bank, exchange rate</li>
+              </ul>
+            </div>
+            <div class="result">
+              <h4>Expected result</h4>
+              <p>Procurement flow is ready for request, order, receiving, and finance reference handling.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card">
+          <div class="phase-top">
+            <div class="phase-title">
+              <div class="phase-number">3</div>
+              <div>
+                <h3>Budget and approval</h3>
+                <p>Build budget control, approval levels, and budget change handling.</p>
+              </div>
+            </div>
+            <div class="phase-meta"><strong>8</strong> functions</div>
+          </div>
+          <div class="phase-body">
+            <div class="workflow">
+              <h4>Workflow</h4>
+              <div class="steps">
+                <div class="step"><span>1</span>Budget setup</div>
+                <div class="step"><span>2</span>Approval rules</div>
+                <div class="step"><span>3</span>Approval levels</div>
+                <div class="step"><span>4</span>Approval control</div>
+                <div class="step"><span>5</span>Budget change request</div>
+              </div>
+            </div>
+            <div class="functions">
+              <h4>Function scope</h4>
+              <ul>
+                <li>Budget account, budget item, budget item detail</li>
+                <li>Budget approval rule</li>
+                <li>Increase budget and increase budget detail</li>
+                <li>Approval workflow and approval workflow step</li>
+              </ul>
+            </div>
+            <div class="result">
+              <h4>Expected result</h4>
+              <p>Budget control is ready so spending can follow approval rules before changes are accepted.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card">
+          <div class="phase-top">
+            <div class="phase-title">
+              <div class="phase-number">4</div>
+              <div>
+                <h3>Document records</h3>
+                <p>Build document records for tracking, status, category, and follow-up.</p>
+              </div>
+            </div>
+            <div class="phase-meta"><strong>4</strong> functions</div>
+          </div>
+          <div class="phase-body">
+            <div class="workflow">
+              <h4>Workflow</h4>
+              <div class="steps">
+                <div class="step"><span>1</span>Document setup</div>
+                <div class="step"><span>2</span>Document record</div>
+                <div class="step"><span>3</span>Category and status</div>
+                <div class="step"><span>4</span>Follow-up record</div>
+              </div>
+            </div>
+            <div class="functions">
+              <h4>Function scope</h4>
+              <ul>
+                <li>Document</li>
+                <li>Document type</li>
+                <li>Document category</li>
+                <li>Document status</li>
+              </ul>
+            </div>
+            <div class="result">
+              <h4>Expected result</h4>
+              <p>Document records are ready for consistent filing, status tracking, and review.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase-card">
+          <div class="phase-top">
+            <div class="phase-title">
+              <div class="phase-number">5</div>
+              <div>
+                <h3>Management reporting</h3>
+                <p>Build reporting views so management can review company summary, budget status, and procurement records.</p>
+              </div>
+            </div>
+            <div class="phase-meta"><strong>4</strong> functions</div>
+          </div>
+          <div class="phase-body">
+            <div class="workflow">
+              <h4>Workflow</h4>
+              <div class="steps">
+                <div class="step"><span>1</span>Company summary and budget status</div>
+                <div class="step"><span>2</span>Purchase request report</div>
+                <div class="step"><span>3</span>Purchase order report</div>
+                <div class="step"><span>4</span>Receipt report</div>
+                <div class="step"><span>5</span>Management review</div>
+              </div>
+            </div>
+            <div class="functions">
+              <h4>Function scope</h4>
+              <ul>
+                <li>Company summary and budget status report</li>
+                <li>Report purchase request</li>
+                <li>Report purchase order</li>
+                <li>Report receipt</li>
+              </ul>
+            </div>
+            <div class="result">
+              <h4>Expected result</h4>
+              <p>Management reporting is ready for review of company summary, budget status, purchase requests, purchase orders, and receipts.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>HAL ERP web development plan</span>
+      <span>Prepared for planning review</span>
+    </footer>
+  </div>
+</body>
+</html>
