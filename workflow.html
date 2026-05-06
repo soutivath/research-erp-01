@@ -12,11 +12,13 @@
       --text: #334155;
       --muted: #64748b;
       --line: #e2e8f0;
+      --p0: #475569;
       --p1: #2563eb;
       --p2: #0d9488;
       --p3: #d97706;
       --p4: #7c3aed;
       --p5: #db2777;
+      --p0-soft: #e2e8f0;
       --p1-soft: #dbeafe;
       --p2-soft: #ccfbf1;
       --p3-soft: #fef3c7;
@@ -156,6 +158,7 @@
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     }
 
+    .flow-step.p0 { border-top: 5px solid var(--p0); }
     .flow-step.p1 { border-top: 5px solid var(--p1); }
     .flow-step.p2 { border-top: 5px solid var(--p2); }
     .flow-step.p3 { border-top: 5px solid var(--p3); }
@@ -174,6 +177,7 @@
       margin-bottom: 12px;
     }
 
+    .p0 .flow-badge { background: var(--p0); }
     .p1 .flow-badge { background: var(--p1); }
     .p2 .flow-badge { background: var(--p2); }
     .p3 .flow-badge { background: var(--p3); }
@@ -234,6 +238,7 @@
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     }
 
+    .phase-card.p0 { border-left: 6px solid var(--p0); }
     .phase-card.p1 { border-left: 6px solid var(--p1); }
     .phase-card.p2 { border-left: 6px solid var(--p2); }
     .phase-card.p3 { border-left: 6px solid var(--p3); }
@@ -251,6 +256,7 @@
       color: #fff;
     }
 
+    .p0 .phase-num { background: var(--p0); }
     .p1 .phase-num { background: var(--p1); }
     .p2 .phase-num { background: var(--p2); }
     .p3 .phase-num { background: var(--p3); }
@@ -302,6 +308,7 @@
       font-size: 14px;
     }
 
+    .phase-card.p0 .phase-outcome { background: var(--p0-soft); }
     .phase-card.p1 .phase-outcome { background: var(--p1-soft); }
     .phase-card.p2 .phase-outcome { background: var(--p2-soft); }
     .phase-card.p3 .phase-outcome { background: var(--p3-soft); }
@@ -346,8 +353,8 @@
 
     .gantt-header {
       display: grid;
-      grid-template-columns: 200px repeat(14, minmax(0, 1fr));
-      gap: 4px;
+      grid-template-columns: 200px repeat(4, minmax(0, 1fr));
+      gap: 6px;
       margin-bottom: 8px;
     }
 
@@ -368,8 +375,8 @@
 
     .gantt-row {
       display: grid;
-      grid-template-columns: 200px repeat(14, minmax(0, 1fr));
-      gap: 4px;
+      grid-template-columns: 200px repeat(4, minmax(0, 1fr));
+      gap: 6px;
       align-items: center;
       padding: 8px 0;
       border-top: 1px solid var(--line);
@@ -397,6 +404,7 @@
       place-items: center;
     }
 
+    .gantt-bar.p0 { background: var(--p0); }
     .gantt-bar.p1 { background: var(--p1); }
     .gantt-bar.p2 { background: var(--p2); }
     .gantt-bar.p3 { background: var(--p3); }
@@ -1193,12 +1201,12 @@
 
     <!-- COVER -->
     <header class="cover">
-      <h1>ລະບົບ ERP ເວັບ &mdash; ແຜນພັດທະນາ</h1>
+      <h1>ລະບົບ ERP &mdash; ແຜນພັດທະນາ</h1>
       <div class="chips">
-        <div class="chip"><span class="chip-num">2</span><span class="chip-label">ອາທິດທັງໝົດ</span></div>
-        <div class="chip"><span class="chip-num">5</span><span class="chip-label">ໄລຍະ</span></div>
-        <div class="chip"><span class="chip-num">43</span><span class="chip-label">ໜ້າວຽກ</span></div>
-        <div class="chip"><span class="chip-num">1</span><span class="chip-label">ເວັບແອັບ</span></div>
+        <div class="chip"><span class="chip-num">1</span><span class="chip-label">ເດືອນ ທັງໝົດ</span></div>
+        <div class="chip"><span class="chip-num">6</span><span class="chip-label">ໄລຍະ</span></div>
+        <div class="chip"><span class="chip-num">50</span><span class="chip-label">ໜ້າວຽກ</span></div>
+        <div class="chip"><span class="chip-num">2</span><span class="chip-label">ເວັບ + ແອັບ</span></div>
       </div>
     </header>
 
@@ -1206,10 +1214,15 @@
     <section>
       <h2>ພາບລວມຂອງຂັ້ນຕອນ</h2>
       <p class="section-lead">
-        ລະບົບຖືກສ້າງເປັນ 5 ໄລຍະ. ແຕ່ລະໄລຍະ ຈະໄດ້ຜົນງານທີ່ໃຊ້ງານຈິງໄດ້ທັນທີ.
+        ລະບົບຖືກສ້າງເປັນ 6 ໄລຍະ ໃນ 1 ເດືອນ &mdash; ຄົ້ນຄວ້າ 1 ອາທິດ, ຈາກນັ້ນສ້າງລະບົບເວັບ ແລະ ແອັບ 3 ອາທິດ.
       </p>
 
       <div class="flow-strip">
+        <div class="flow-step p0">
+          <div class="flow-badge">0</div>
+          <h3>ຄົ້ນຄວ້າ</h3>
+          <p>ສຳພາດຜູ້ໃຊ້, ສຶກສາຂັ້ນຕອນ, ກຳນົດຄວາມຕ້ອງການ.</p>
+        </div>
         <div class="flow-step p1">
           <div class="flow-badge">1</div>
           <h3>ຕັ້ງຄ່າ</h3>
@@ -1246,6 +1259,27 @@
     <section>
       <h2>ສິ່ງທີ່ຈະສ້າງ ໃນແຕ່ລະໄລຍະ</h2>
       <div class="phase-grid">
+
+        <article class="phase-card p0">
+          <div class="phase-num">0</div>
+          <div class="phase-body">
+            <h3>ຄົ້ນຄວ້າ &mdash; ສຶກສາ ແລະ ກຳນົດຄວາມຕ້ອງການ</h3>
+            <p class="phase-goal">ສຶກສາວຽກປະຈຳວັນ, ສຳພາດຜູ້ໃຊ້, ແລະ ກຳນົດໂຄງສ້າງຂອງລະບົບ ກ່ອນເລີ່ມພັດທະນາ.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະເຮັດ</dt>
+              <dd>
+                <ul>
+                  <li>ສຳພາດຜູ້ໃຊ້ (ທີມຈັດຊື້, ການເງິນ, ຜູ້ບໍລິຫານ).</li>
+                  <li>ສຶກສາຂັ້ນຕອນເຮັດວຽກໃນປັດຈຸບັນ ແລະ ຟອມເອກະສານທີ່ໃຊ້.</li>
+                  <li>ຮ່າງເອກະສານຄວາມຕ້ອງການ (ບົດບາດ, ສິດ, ກົດການອະນຸມັດ).</li>
+                  <li>ອອກແບບໜ້າຈໍຫຍໍ້ (mockup) ສຳລັບເວັບ ແລະ ແອັບ.</li>
+                  <li>ຍືນຍັນແຜນກັບຜູ້ບໍລິຫານ ກ່ອນເລີ່ມພັດທະນາ.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>5</strong><span>ມື້</span></div>
+        </article>
 
         <article class="phase-card p1">
           <div class="phase-num">1</div>
@@ -1915,6 +1949,91 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- TIMELINE -->
+    <section>
+      <h2>ຕາຕະລາງເວລາ &mdash; 1 ເດືອນ (ເວັບ + ແອັບ)</h2>
+      <p class="section-lead">
+        ອາທິດທີ 1 ແມ່ນ <strong>ຄົ້ນຄວ້າ</strong>. ອາທິດທີ 2&ndash;4 ແມ່ນ <strong>ພັດທະນາ</strong> ທັງເວັບ ແລະ ແອັບ ໄປພ້ອມກັນ.
+      </p>
+
+      <div class="gantt">
+        <div class="gantt-header">
+          <div>ໄລຍະ</div>
+          <div>ອາທິດ 1</div>
+          <div>ອາທິດ 2</div>
+          <div>ອາທິດ 3</div>
+          <div>ອາທິດ 4</div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 1 &middot; ຄົ້ນຄວ້າ">
+          <div class="gantt-label">0. ຄົ້ນຄວ້າ</div>
+          <div class="gantt-bar p0">5 ມື້</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 2 &middot; ຕັ້ງຄ່າ">
+          <div class="gantt-label">1. ຕັ້ງຄ່າ</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-bar p1">2 ມື້</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 2&ndash;3 &middot; ການຈັດຊື້">
+          <div class="gantt-label">2. ການຈັດຊື້</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-bar p2">3 ມື້</div>
+          <div class="gantt-bar p2">2 ມື້</div>
+          <div class="gantt-cell"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 3 &middot; ງົບປະມານ ແລະ ການອະນຸມັດ">
+          <div class="gantt-label">3. ງົບປະມານ</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-bar p3">3 ມື້</div>
+          <div class="gantt-cell"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 4 &middot; ເອກະສານ">
+          <div class="gantt-label">4. ເອກະສານ</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-bar p4">3 ມື້</div>
+        </div>
+
+        <div class="gantt-row" data-range="ອາທິດ 4 &middot; ລາຍງານ">
+          <div class="gantt-label">5. ລາຍງານ</div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-cell"></div>
+          <div class="gantt-bar p5">2 ມື້</div>
+        </div>
+
+        <div class="gantt-summary">
+          <div class="summary-card">
+            <strong>1 ເດືອນ</strong>
+            <span>ໄລຍະທັງໝົດ</span>
+          </div>
+          <div class="summary-card">
+            <strong>1 ອາທິດ</strong>
+            <span>ຄົ້ນຄວ້າ</span>
+          </div>
+          <div class="summary-card">
+            <strong>3 ອາທິດ</strong>
+            <span>ພັດທະນາ</span>
+          </div>
+          <div class="summary-card">
+            <strong>2</strong>
+            <span>ເວັບ + ແອັບ</span>
+          </div>
+        </div>
+      </div>
     </section>
 
   </div>
