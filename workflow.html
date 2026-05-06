@@ -1134,10 +1134,9 @@
       .summary-card,
       .risk-card,
       .stage,
+      .role-lanes,
       .role-lane,
       .lane-header,
-      .gantt-row,
-      .gantt-header,
       .config-item,
       .screen,
       .mock-table,
@@ -1146,6 +1145,46 @@
         break-inside: avoid;
         page-break-inside: avoid;
       }
+
+      /* Role-lanes table: tighter so the whole table fits on one page */
+      .role-lanes {
+        margin: 8px 0 18px;
+        padding: 12px;
+        gap: 6px;
+      }
+      .lane-header,
+      .role-lane {
+        grid-template-columns: 140px repeat(3, 1fr);
+        gap: 6px;
+      }
+      .lane-header div { font-size: 10px; padding: 4px 0; }
+      .role-name { padding: 8px 10px; font-size: 12px; }
+      .role-cell { padding: 8px; font-size: 11px; }
+
+      /* Gantt: Chrome print engine collapses the multi-column grid.
+         Switch to a clean text-list layout: each phase + its date range. */
+      .gantt {
+        padding: 16px;
+        box-shadow: none;
+      }
+      .gantt-header { display: none; }
+      .gantt-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        padding: 10px 0;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .gantt-cell, .gantt-bar { display: none; }
+      .gantt-row::after {
+        content: attr(data-range);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .gantt-summary { margin-top: 14px; }
     }
   </style>
 </head>
@@ -1154,7 +1193,6 @@
 
     <!-- COVER -->
     <header class="cover">
-      <span class="eyebrow">ແຜນພັດທະນາ &mdash; ຮ່າງ v1</span>
       <h1>ລະບົບ ERP ເວັບ &mdash; ແຜນພັດທະນາ</h1>
       <div class="chips">
         <div class="chip"><span class="chip-num">2</span><span class="chip-label">ອາທິດທັງໝົດ</span></div>
@@ -1359,7 +1397,6 @@
               <h3>ຂັ້ນ A &mdash; ໃບສະເໜີຊື້</h3>
               <span class="actor-badge r1">ພະນັກງານ</span>
             </div>
-            <p class="stage-sub">ພະນັກງານສະເໜີສິ່ງທີ່ຕ້ອງການຊື້. ໃບສະເໜີຈະຖືກສົ່ງຕົງໄປຫາທີມຈັດຊື້ &mdash; ບໍ່ມີຂັ້ນຕອນຜູ້ຈັດການ.</p>
 
             <div class="stage-body-grid">
               <ol class="step-list">
@@ -1489,7 +1526,7 @@
             <div class="decision">
               <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ C</div>
               <div class="branches">
-                <div class="branch yes"><span class="branch-tag">ຄົບ</span> <span>ທຸກຢ່າງມາຮອດ. ໃບສັ່ງຊື້ຖືກປິດ. ສາຍໂສ້ສົມບູນ.</span></div>
+                <div class="branch yes"><span class="branch-tag">ຄົບ</span> <span>ທຸກຢ່າງມາຮອດ. ໃບສັ່ງຊື້ຖືກປິດ. ສົມບູນ.</span></div>
                 <div class="branch no"><span class="branch-tag">ບາງສ່ວນ</span> <span>ມາຮອດພຽງບາງສ່ວນ. ໃບສັ່ງຊື້ຍັງເປີດໄວ້ ຈົນກວ່າສ່ວນທີ່ເຫຼືອຈະຖືກສົ່ງມາ (ຫຼື ຍົກເລີກ).</span></div>
               </div>
             </div>
@@ -1879,62 +1916,6 @@
       </div>
 
     </section>
-
-    <!-- TIMELINE -->
-    <section>
-      <h2>ຕາຕະລາງເວລາ</h2>
-      <div class="gantt">
-        <div class="gantt-header">
-          <div>ໄລຍະ</div>
-          <div>ມ.1</div><div>ມ.2</div><div>ມ.3</div><div>ມ.4</div><div>ມ.5</div><div>ມ.6</div><div>ມ.7</div>
-          <div>ມ.8</div><div>ມ.9</div><div>ມ.10</div><div>ມ.11</div><div>ມ.12</div><div>ມ.13</div><div>ມ.14</div>
-        </div>
-
-        <div class="gantt-row" data-range="ມ.1 – ມ.2">
-          <div class="gantt-label">1. ຕັ້ງຄ່າ</div>
-          <div class="gantt-bar p1" style="grid-column: 2 / span 2;">2 ມື້</div>
-          <div class="gantt-cell" style="grid-column: 4 / span 12;"></div>
-        </div>
-
-        <div class="gantt-row" data-range="ມ.3 – ມ.7">
-          <div class="gantt-label">2. ການຈັດຊື້</div>
-          <div class="gantt-cell" style="grid-column: 2 / span 2;"></div>
-          <div class="gantt-bar p2" style="grid-column: 4 / span 5;">5 ມື້</div>
-          <div class="gantt-cell" style="grid-column: 9 / span 7;"></div>
-        </div>
-
-        <div class="gantt-row" data-range="ມ.5 – ມ.8">
-          <div class="gantt-label">3. ງົບປະມານ ແລະ ການອະນຸມັດ</div>
-          <div class="gantt-cell" style="grid-column: 2 / span 4;"></div>
-          <div class="gantt-bar p3" style="grid-column: 6 / span 4;">4 ມື້</div>
-          <div class="gantt-cell" style="grid-column: 10 / span 6;"></div>
-        </div>
-
-        <div class="gantt-row" data-range="ມ.9 – ມ.10">
-          <div class="gantt-label">4. ເອກະສານ</div>
-          <div class="gantt-cell" style="grid-column: 2 / span 8;"></div>
-          <div class="gantt-bar p4" style="grid-column: 10 / span 2;">2 ມື້</div>
-          <div class="gantt-cell" style="grid-column: 12 / span 4;"></div>
-        </div>
-
-        <div class="gantt-row" data-range="ມ.11 – ມ.13">
-          <div class="gantt-label">5. ລາຍງານ</div>
-          <div class="gantt-cell" style="grid-column: 2 / span 10;"></div>
-          <div class="gantt-bar p5" style="grid-column: 12 / span 3;">3 ມື້</div>
-        </div>
-      </div>
-
-      <div class="gantt-summary">
-        <div class="summary-card"><strong>ມື້ 1</strong><span>ເລີ່ມໂຄງການ</span></div>
-        <div class="summary-card"><strong>ມື້ 7</strong><span>ການຈັດຊື້ ໃຊ້ງານ (ທົດສອບພາຍໃນ)</span></div>
-        <div class="summary-card"><strong>ມື້ 8</strong><span>ກົດການອະນຸມັດໃຊ້ງານ</span></div>
-        <div class="summary-card"><strong>ມື້ 14</strong><span>ເປີດໃຊ້ງານຈິງ</span></div>
-      </div>
-    </section>
-
-    <footer>
-      <span>ສະບັບ <strong>v1 ຮ່າງ</strong> &mdash; ວັນທີ <strong>2026-05-06</strong></span>
-    </footer>
 
   </div>
 </body>
