@@ -1,793 +1,1894 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HAL ERP Deep Development Workflow</title>
+  <title>ລະບົບ ERP ເວັບ — ແຜນພັດທະນາ</title>
   <style>
     :root {
-      --page: #eef2f6;
+      --page: #f4f6fb;
       --paper: #ffffff;
-      --ink: #101828;
-      --text: #344054;
-      --muted: #667085;
-      --line: #d7dee8;
-      --navy: #172554;
-      --blue: #1d4ed8;
-      --blue-soft: #eff6ff;
-      --teal: #0f766e;
-      --teal-soft: #ecfdf5;
-      --amber: #b45309;
-      --amber-soft: #fffbeb;
-      --red: #b42318;
-      --red-soft: #fff1f3;
-      --purple: #6d28d9;
-      --purple-soft: #f5f3ff;
-      --slate-soft: #f8fafc;
-      --shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
+      --ink: #0f172a;
+      --text: #334155;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --p1: #2563eb;
+      --p2: #0d9488;
+      --p3: #d97706;
+      --p4: #7c3aed;
+      --p5: #db2777;
+      --p1-soft: #dbeafe;
+      --p2-soft: #ccfbf1;
+      --p3-soft: #fef3c7;
+      --p4-soft: #ede9fe;
+      --p5-soft: #fce7f3;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.10);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background:
-        linear-gradient(90deg, rgba(215, 222, 232, 0.75) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(215, 222, 232, 0.75) 1px, transparent 1px),
-        var(--page);
-      background-size: 42px 42px;
+      background: var(--page);
       color: var(--ink);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: "Noto Sans Lao", "Phetsarath OT", "Helvetica Neue", Arial, Helvetica, sans-serif;
       font-size: 16px;
-      line-height: 1.55;
+      line-height: 1.7;
     }
 
-    .report {
-      width: min(1220px, calc(100% - 36px));
-      margin: 34px auto;
+    .page {
+      width: min(1200px, calc(100% - 36px));
+      margin: 32px auto;
       background: var(--paper);
-      border: 1px solid var(--line);
+      border-radius: 14px;
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
+    /* COVER */
     .cover {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 390px;
-      gap: 34px;
-      padding: 48px;
+      position: relative;
+      padding: 64px 56px 48px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.10), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(13, 148, 136, 0.10), transparent 45%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(135deg, #ffffff 0%, #f7fbff 62%, #eef6f5 100%);
     }
 
     .eyebrow {
-      display: inline-flex;
-      margin: 0 0 14px;
-      padding: 6px 10px;
-      border: 1px solid #bfdbfe;
-      background: var(--blue-soft);
-      color: var(--blue);
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--p1-soft);
+      color: var(--p1);
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      margin-bottom: 18px;
     }
 
     h1 {
-      max-width: 780px;
       margin: 0;
-      font-size: clamp(36px, 5vw, 60px);
-      line-height: 1.05;
-      letter-spacing: 0;
+      font-size: clamp(34px, 4.6vw, 54px);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      max-width: 900px;
     }
 
-    .lead {
-      max-width: 780px;
+    .tagline {
+      max-width: 760px;
       margin: 18px 0 0;
       color: var(--text);
       font-size: 19px;
     }
 
-    .verdict {
+    .chips {
       display: grid;
-      gap: 12px;
-      padding: 20px;
-      border: 1px solid #bbf7d0;
-      background: rgba(236, 253, 245, 0.9);
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-top: 32px;
     }
 
-    .verdict h2 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .verdict p {
-      margin: 0;
-      color: var(--text);
-    }
-
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 22px;
-    }
-
-    .status {
-      padding: 12px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.86);
-    }
-
-    .status b {
-      display: block;
-      color: var(--blue);
-      font-size: 22px;
-      line-height: 1.1;
-    }
-
-    .status span {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    section {
-      padding: 38px 48px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    section:last-of-type {
-      border-bottom: 0;
-    }
-
-    .section-title {
-      max-width: 850px;
-      margin-bottom: 24px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1.2;
-    }
-
-    .section-title p {
-      margin: 8px 0 0;
-      color: var(--muted);
-    }
-
-    .flow {
-      display: grid;
-      gap: 16px;
-    }
-
-    .stage {
-      display: grid;
-      grid-template-columns: 68px minmax(220px, 0.9fr) minmax(0, 1.4fr) minmax(230px, 0.85fr);
-      gap: 16px;
-      align-items: stretch;
-      padding: 18px;
-      border: 1px solid var(--line);
+    .chip {
+      padding: 18px 20px;
+      border-radius: 12px;
       background: #fff;
-      box-shadow: 0 14px 34px rgba(16, 24, 40, 0.06);
+      border: 1px solid var(--line);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
     }
 
-    .stage-no {
-      display: grid;
-      place-items: center;
-      width: 52px;
-      height: 52px;
-      background: var(--navy);
-      color: #fff;
-      font-size: 22px;
-      font-weight: 800;
+    .chip-num {
+      display: block;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--p1);
     }
 
-    .stage h3 {
-      margin: 0 0 8px;
-      font-size: 22px;
-      line-height: 1.2;
-    }
-
-    .stage p {
-      margin: 0;
-      color: var(--text);
-    }
-
-    .mini-label {
-      margin: 0 0 10px;
+    .chip-label {
+      display: block;
+      margin-top: 6px;
       color: var(--muted);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
-    .steps {
-      display: grid;
-      gap: 8px;
-    }
-
-    .step {
-      display: grid;
-      grid-template-columns: 26px minmax(0, 1fr);
-      gap: 10px;
-      min-height: 44px;
-      align-items: center;
-      padding: 9px 11px;
-      border: 1px solid var(--line);
-      background: var(--slate-soft);
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .step span {
-      display: grid;
-      place-items: center;
-      width: 24px;
-      height: 24px;
-      background: var(--blue-soft);
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .gate {
-      display: grid;
-      gap: 10px;
-      align-content: start;
-      padding: 14px;
-      border: 1px solid #fed7aa;
-      border-left: 5px solid var(--amber);
-      background: var(--amber-soft);
-    }
-
-    .gate b {
-      display: block;
-      color: var(--amber);
-    }
-
-    .gate ul,
-    .check-list ul,
-    .risk ul {
-      margin: 0;
-      padding-left: 19px;
-      color: var(--text);
-    }
-
-    .gate li,
-    .check-list li,
-    .risk li {
-      margin: 5px 0;
-    }
-
-    .swimlanes {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .lane {
-      border: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .lane h3 {
-      margin: 0;
-      padding: 14px;
+    /* SECTIONS */
+    section {
+      padding: 56px;
       border-bottom: 1px solid var(--line);
-      background: var(--slate-soft);
-      font-size: 18px;
     }
 
-    .lane ul {
-      margin: 0;
-      padding: 14px 18px 16px 32px;
+    section:last-of-type { border-bottom: 0; }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-lead {
+      margin: 0 0 32px;
       color: var(--text);
+      max-width: 780px;
+      font-size: 17px;
     }
 
-    .lane li {
-      margin: 7px 0;
-    }
-
-    .validation-grid {
+    /* FLOW STRIP */
+    .flow-strip {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+      margin: 0 0 16px;
     }
 
-    .check-list,
-    .risk {
-      padding: 18px;
-      border: 1px solid var(--line);
+    .flow-step {
+      position: relative;
+      padding: 22px 18px 22px 22px;
+      border-radius: 14px;
       background: #fff;
-    }
-
-    .check-list.good {
-      border-left: 5px solid var(--teal);
-      background: var(--teal-soft);
-    }
-
-    .check-list.watch {
-      border-left: 5px solid var(--amber);
-      background: var(--amber-soft);
-    }
-
-    .check-list.next {
-      border-left: 5px solid var(--purple);
-      background: var(--purple-soft);
-    }
-
-    .check-list h3,
-    .risk h3 {
-      margin: 0 0 10px;
-      font-size: 19px;
-    }
-
-    .timeline {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .milestone {
-      min-height: 132px;
-      padding: 14px;
       border: 1px solid var(--line);
-      background: #fff;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     }
 
-    .milestone span {
-      color: var(--blue);
-      font-weight: 800;
+    .flow-step.p1 { border-top: 5px solid var(--p1); }
+    .flow-step.p2 { border-top: 5px solid var(--p2); }
+    .flow-step.p3 { border-top: 5px solid var(--p3); }
+    .flow-step.p4 { border-top: 5px solid var(--p4); }
+    .flow-step.p5 { border-top: 5px solid var(--p5); }
+
+    .flow-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 900;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .p1 .flow-badge { background: var(--p1); }
+    .p2 .flow-badge { background: var(--p2); }
+    .p3 .flow-badge { background: var(--p3); }
+    .p4 .flow-badge { background: var(--p4); }
+    .p5 .flow-badge { background: var(--p5); }
+
+    .flow-step h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
       font-size: 13px;
     }
 
-    .milestone h3 {
-      margin: 8px 0 6px;
-      font-size: 17px;
-      line-height: 1.3;
+    .flow-arrows {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
     }
 
-    .milestone p {
-      margin: 0;
-      color: var(--text);
-      font-size: 14px;
+    .flow-arrow {
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--p1) 0%, var(--p2) 25%, var(--p3) 50%, var(--p4) 75%, var(--p5) 100%);
+      grid-column: 1 / 6;
+      position: relative;
     }
 
-    footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 20px 48px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 14px;
-      background: var(--slate-soft);
+    .flow-arrow::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-style: solid;
+      border-width: 8px 0 8px 12px;
+      border-color: transparent transparent transparent var(--p5);
     }
 
-    .top-nav {
-      display: flex;
-      gap: 10px;
-      padding: 14px 48px;
-      border-bottom: 1px solid var(--line);
-      background: var(--slate-soft);
+    /* PHASE CARDS */
+    .phase-grid {
+      display: grid;
+      gap: 22px;
     }
 
-    .top-nav a {
-      display: inline-flex;
-      padding: 8px 11px;
-      border: 1px solid var(--line);
+    .phase-card {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) auto;
+      gap: 24px;
+      padding: 26px;
+      border-radius: 14px;
       background: #fff;
-      color: var(--blue);
-      font-size: 14px;
-      font-weight: 800;
-      text-decoration: none;
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     }
 
-    .top-nav a[aria-current="page"] {
-      background: var(--blue);
-      border-color: var(--blue);
+    .phase-card.p1 { border-left: 6px solid var(--p1); }
+    .phase-card.p2 { border-left: 6px solid var(--p2); }
+    .phase-card.p3 { border-left: 6px solid var(--p3); }
+    .phase-card.p4 { border-left: 6px solid var(--p4); }
+    .phase-card.p5 { border-left: 6px solid var(--p5); }
+
+    .phase-num {
+      display: grid;
+      place-items: center;
+      width: 88px;
+      height: 88px;
+      border-radius: 14px;
+      font-size: 44px;
+      font-weight: 900;
       color: #fff;
     }
 
-    @media (max-width: 1040px) {
-      .cover,
-      .stage,
-      .swimlanes,
-      .validation-grid,
-      .timeline {
-        grid-template-columns: 1fr;
-      }
+    .p1 .phase-num { background: var(--p1); }
+    .p2 .phase-num { background: var(--p2); }
+    .p3 .phase-num { background: var(--p3); }
+    .p4 .phase-num { background: var(--p4); }
+    .p5 .phase-num { background: var(--p5); }
 
-      .status-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+    .phase-body h3 {
+      margin: 0 0 6px;
+      font-size: 22px;
+    }
+
+    .phase-goal {
+      margin: 0 0 16px;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .phase-build {
+      margin: 0 0 12px;
+    }
+
+    .phase-build dt {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .phase-build dd {
+      margin: 0;
+    }
+
+    .phase-build ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text);
+    }
+
+    .phase-build li { margin: 4px 0; }
+
+    .phase-outcome {
+      margin: 12px 0 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--p1-soft);
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .phase-card.p1 .phase-outcome { background: var(--p1-soft); }
+    .phase-card.p2 .phase-outcome { background: var(--p2-soft); }
+    .phase-card.p3 .phase-outcome { background: var(--p3-soft); }
+    .phase-card.p4 .phase-outcome { background: var(--p4-soft); }
+    .phase-card.p5 .phase-outcome { background: var(--p5-soft); }
+
+    .phase-meta {
+      align-self: start;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      text-align: right;
+      min-width: 130px;
+    }
+
+    .phase-meta strong {
+      display: block;
+      font-size: 26px;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .phase-meta span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* TIMELINE (Gantt) */
+    .gantt {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .gantt-header {
+      display: grid;
+      grid-template-columns: 200px repeat(14, minmax(0, 1fr));
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .gantt-header > div {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .gantt-header > div:first-child {
+      text-align: left;
+      color: var(--ink);
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    .gantt-row {
+      display: grid;
+      grid-template-columns: 200px repeat(14, minmax(0, 1fr));
+      gap: 4px;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .gantt-label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .gantt-cell {
+      height: 26px;
+      border-radius: 6px;
+      background: #f1f5f9;
+    }
+
+    .gantt-bar {
+      position: relative;
+      height: 26px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+
+    .gantt-bar.p1 { background: var(--p1); }
+    .gantt-bar.p2 { background: var(--p2); }
+    .gantt-bar.p3 { background: var(--p3); }
+    .gantt-bar.p4 { background: var(--p4); }
+    .gantt-bar.p5 { background: var(--p5); }
+
+    .gantt-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .summary-card {
+      padding: 16px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 22px;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .summary-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* RISKS */
+    .risk-card {
+      padding: 24px 26px;
+      border-radius: 14px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-left: 6px solid var(--p3);
+    }
+
+    .risk-card h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .risk-card ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text);
+    }
+
+    .risk-card li { margin: 6px 0; }
+
+    /* PROCUREMENT DETAIL */
+    .proc-intro {
+      padding: 18px 22px;
+      background: var(--p2-soft);
+      border-left: 5px solid var(--p2);
+      border-radius: 10px;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .proc-intro strong { color: #0f766e; }
+
+    .stage-flow {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr);
+      gap: 22px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--p2);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .stage-num {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: var(--p2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .stage h3 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      color: var(--ink);
+    }
+
+    .stage .stage-sub {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .step-list li {
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 15px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .step-list li::before {
+      content: counter(step);
+      counter-increment: step;
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--p2);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .step-list { counter-reset: step; }
+
+    .stage-arrow {
+      text-align: center;
+      color: var(--p2);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.4em;
+      margin: -4px 0;
+    }
+
+    .config-block {
+      margin-top: 12px;
+      padding: 28px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+      border: 1px solid var(--line);
+    }
+
+    .config-block h3 {
+      margin: 0 0 6px;
+      font-size: 22px;
+    }
+
+    .config-block .lead {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .config-item {
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .config-item .config-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .config-item .config-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ROLE LANES */
+    .role-lanes {
+      display: grid;
+      gap: 8px;
+      margin: 8px 0 32px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .lane-header {
+      display: grid;
+      grid-template-columns: 200px repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .lane-header div {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 6px 0;
+    }
+
+    .lane-header div:first-child { text-align: left; padding-left: 6px; }
+
+    .lane-header .lh-a { color: var(--p2); }
+    .lane-header .lh-b { color: var(--p2); }
+    .lane-header .lh-c { color: var(--p2); }
+
+    .role-lane {
+      display: grid;
+      grid-template-columns: 200px repeat(3, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .role-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: #fff;
+      border-radius: 10px;
+      font-weight: 700;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .role-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex: 0 0 12px;
+    }
+
+    .role-dot.r1 { background: #2563eb; }
+    .role-dot.r2 { background: #d97706; }
+    .role-dot.r3 { background: #0d9488; }
+    .role-dot.r4 { background: #7c3aed; }
+
+    .role-cell {
+      padding: 12px;
+      background: #fff;
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .role-cell.idle { background: #fafafa; color: #cbd5e1; }
+
+    .role-cell.r1 { border: 1px solid #2563eb; background: #dbeafe; color: #1e40af; font-weight: 700; }
+    .role-cell.r2 { border: 1px solid #d97706; background: #fef3c7; color: #92400e; font-weight: 700; }
+    .role-cell.r3 { border: 1px solid #0d9488; background: #ccfbf1; color: #0f766e; font-weight: 700; }
+    .role-cell.r4 { border: 1px solid #7c3aed; background: #ede9fe; color: #5b21b6; font-weight: 700; }
+
+    /* ACTOR BADGE */
+    .stage-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .stage-head h3 { margin: 0; }
+
+    .actor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .actor-badge.r1 { background: #dbeafe; color: #1e40af; }
+    .actor-badge.r2 { background: #fef3c7; color: #92400e; }
+    .actor-badge.r3 { background: #ccfbf1; color: #0f766e; }
+    .actor-badge.r4 { background: #ede9fe; color: #5b21b6; }
+
+    /* STAGE BODY: steps + screen mockup side-by-side */
+    .stage-body-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 22px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .stage-body-grid { grid-template-columns: 1fr; }
+      .lane-header, .role-lane {
+        grid-template-columns: 140px repeat(3, 1fr);
       }
     }
 
-    @media (max-width: 680px) {
-      .report {
-        width: 100%;
-        margin: 0;
-        border-left: 0;
-        border-right: 0;
-      }
+    /* SCREEN MOCKUP */
+    .screen {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+      font-size: 12px;
+    }
 
-      .cover,
-      section,
-      footer,
-      .top-nav {
-        padding-left: 22px;
-        padding-right: 22px;
-      }
+    .screen-bar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--line);
+    }
 
-      h1 {
-        font-size: 34px;
-      }
+    .screen-bar span {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #cbd5e1;
+    }
 
-      .status-grid {
+    .screen-bar span:first-child { background: #ef4444; }
+    .screen-bar span:nth-child(2) { background: #f59e0b; }
+    .screen-bar span:nth-child(3) { background: #22c55e; }
+
+    .screen-body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .mock-title {
+      font-weight: 800;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mock-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .mock-input {
+      height: 22px;
+      background: #f1f5f9;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+
+    .mock-input.filled {
+      background: #fff;
+      color: var(--ink);
+      font-size: 11px;
+      padding: 3px 6px;
+      line-height: 1.5;
+      height: auto;
+      min-height: 22px;
+    }
+
+    .mock-table {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 11px;
+    }
+
+    .mock-table .mt-row {
+      display: grid;
+      grid-template-columns: 1.6fr 0.7fr 0.7fr;
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mock-table .mt-row:last-child { border-bottom: 0; }
+    .mock-table .mt-head {
+      background: #f1f5f9;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .mock-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .mock-btn {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+
+    .mock-btn.approve { background: #16a34a; }
+    .mock-btn.reject  { background: #dc2626; }
+    .mock-btn.send    { background: #2563eb; }
+    .mock-btn.save    { background: var(--ink); }
+
+    .mock-budget {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #065f46;
+      font-weight: 700;
+    }
+
+    /* DECISION BRANCH */
+    .decision {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: #fffbeb;
+      border: 1px dashed #fcd34d;
+      border-radius: 10px;
+    }
+
+    .decision-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+
+    .branches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .branches { grid-template-columns: 1fr; }
+    }
+
+    .branch {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      border-radius: 8px;
+      border-left: 4px solid;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .branch.yes { border-color: #16a34a; }
+    .branch.no  { border-color: #dc2626; }
+
+    .branch-tag {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .branch.yes .branch-tag { background: #dcfce7; color: #166534; }
+    .branch.no  .branch-tag { background: #fee2e2; color: #991b1b; }
+
+    /* STATUS PILLS */
+    .pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-pill.pending   { background: #fef3c7; color: #92400e; }
+    .status-pill.approved  { background: #dcfce7; color: #166534; }
+    .status-pill.rejected  { background: #fee2e2; color: #991b1b; }
+    .status-pill.cancelled { background: #e5e7eb; color: #374151; }
+
+    /* CONFIG EXAMPLE LINE */
+    .config-example {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f1f5f9;
+      border-left: 3px solid var(--p2);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* PHASE-3 (BUDGET) AND PHASE-4 (DOCUMENTS) COLOR VARIANTS */
+    section[data-phase="3"] .stage { border-left-color: var(--p3); }
+    section[data-phase="3"] .stage-num,
+    section[data-phase="3"] .step-list li::before { background: var(--p3); }
+    section[data-phase="3"] .stage-arrow,
+    section[data-phase="3"] .lane-header > div + div { color: var(--p3); }
+    section[data-phase="3"] .config-example { border-left-color: var(--p3); }
+    section[data-phase="3"] .proc-intro { background: var(--p3-soft); border-left-color: var(--p3); }
+    section[data-phase="3"] .proc-intro strong { color: #b45309; }
+
+    section[data-phase="4"] .stage { border-left-color: var(--p4); }
+    section[data-phase="4"] .stage-num,
+    section[data-phase="4"] .step-list li::before { background: var(--p4); }
+    section[data-phase="4"] .stage-arrow,
+    section[data-phase="4"] .lane-header > div + div { color: var(--p4); }
+    section[data-phase="4"] .config-example { border-left-color: var(--p4); }
+    section[data-phase="4"] .proc-intro { background: var(--p4-soft); border-left-color: var(--p4); }
+    section[data-phase="4"] .proc-intro strong { color: #6d28d9; }
+
+    /* FOOTER */
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: space-between;
+      padding: 28px 56px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer strong { color: var(--ink); }
+
+    /* RESPONSIVE */
+    @media (max-width: 980px) {
+      .flow-strip,
+      .gantt-header,
+      .gantt-row {
         grid-template-columns: 1fr;
       }
 
-      footer {
-        display: block;
+      .gantt-cell, .gantt-bar { display: none; }
+
+      .gantt-row { grid-template-columns: 1fr; }
+
+      .gantt-row::after {
+        content: attr(data-range);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .phase-card {
+        grid-template-columns: 64px minmax(0, 1fr);
+      }
+
+      .phase-num {
+        width: 64px; height: 64px; font-size: 30px;
+      }
+
+      .phase-meta {
+        grid-column: 1 / -1;
+        text-align: left;
       }
     }
 
+    @media (max-width: 640px) {
+      section, .cover, footer { padding-left: 22px; padding-right: 22px; }
+      .cover { padding-top: 40px; padding-bottom: 32px; }
+      h1 { font-size: 30px; }
+    }
+
+    /* TL;DR */
+    .tldr {
+      margin: -28px 56px 32px;
+      padding: 32px 36px;
+      background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+      border: 2px solid var(--p3);
+      border-radius: 18px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 14px 40px rgba(217, 119, 6, 0.18);
+    }
+
+    .tldr-eyebrow {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--p3);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .tldr-line {
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.45;
+      margin: 0 0 22px;
+      max-width: 880px;
+    }
+
+    .tldr-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .tldr-tile {
+      padding: 18px 20px;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tldr-tile .tldr-num {
+      font-size: clamp(22px, 2.6vw, 30px);
+      font-weight: 800;
+      color: var(--p2);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .tldr-tile .tldr-label {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 640px) {
+      .tldr { margin-left: 16px; margin-right: 16px; padding: 22px; }
+    }
+
+    /* PRINT (PDF) */
     @media print {
-      body {
-        background: #fff;
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; box-shadow: none; border-radius: 0; }
+      .cover { padding: 36px 32px; }
+      section { padding: 32px; break-inside: avoid; }
+      .phase-card, .gantt, .risk-card, .flow-step, .chip, .summary-card {
+        box-shadow: none; break-inside: avoid;
       }
-
-      .report {
-        width: 100%;
-        margin: 0;
-        border: 0;
-        box-shadow: none;
-      }
-
-      .stage,
-      .lane,
-      .check-list,
-      .milestone {
-        break-inside: avoid;
-        box-shadow: none;
-      }
+      .flow-arrow { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 20px; }
     }
   </style>
 </head>
 <body>
-  <div class="report">
-    <nav class="top-nav" aria-label="Report navigation">
-      <a href="index.html">Development plan</a>
-      <a href="workflow.html" aria-current="page">Deep workflow</a>
-    </nav>
-    <header class="cover">
-      <div>
-        <p class="eyebrow">Deep Workflow Validation</p>
-        <h1>HAL ERP Real-World Development Workflow</h1>
-        <p class="lead">
-          A boss-facing operating flow for how the new web system should move from setup, to purchase request, to approval, to purchase order, to receipt, and finally management reporting.
-        </p>
-        <div class="status-grid">
-          <div class="status"><b>6</b><span>business stages</span></div>
-          <div class="status"><b>4</b><span>control gates</span></div>
-          <div class="status"><b>43</b><span>supporting functions</span></div>
-        </div>
-      </div>
+  <div class="page">
 
-      <div class="verdict">
-        <h2>Executive Answer</h2>
-        <p>
-          The workflow is correct for a real procurement and budget-control system if each transaction is blocked until the required setup, quota, budget, and approval checks are complete.
-        </p>
-        <p>
-          The main area to confirm with management is whether vendor comparison must happen before purchase order creation or during purchase order preparation.
-        </p>
+    <!-- COVER -->
+    <header class="cover">
+      <span class="eyebrow">ແຜນພັດທະນາ &mdash; ຮ່າງ v1</span>
+      <h1>ລະບົບ ERP ເວັບ &mdash; ແຜນພັດທະນາ</h1>
+      <div class="chips">
+        <div class="chip"><span class="chip-num">2</span><span class="chip-label">ອາທິດທັງໝົດ</span></div>
+        <div class="chip"><span class="chip-num">5</span><span class="chip-label">ໄລຍະ</span></div>
+        <div class="chip"><span class="chip-num">43</span><span class="chip-label">ໜ້າວຽກ</span></div>
+        <div class="chip"><span class="chip-num">1</span><span class="chip-label">ເວັບແອັບ</span></div>
       </div>
     </header>
 
+    <!-- THE FLOW -->
     <section>
-      <div class="section-title">
-        <h2>End-To-End Operating Flow</h2>
-        <p>This is the real business movement the development should follow. Each stage shows what the user does, what the system controls, and what must be true before the work can continue.</p>
+      <h2>ພາບລວມຂອງຂັ້ນຕອນ</h2>
+      <p class="section-lead">
+        ລະບົບຖືກສ້າງເປັນ 5 ໄລຍະ. ແຕ່ລະໄລຍະ ຈະໄດ້ຜົນງານທີ່ໃຊ້ງານຈິງໄດ້ທັນທີ.
+      </p>
+
+      <div class="flow-strip">
+        <div class="flow-step p1">
+          <div class="flow-badge">1</div>
+          <h3>ຕັ້ງຄ່າ</h3>
+          <p>ບໍລິສັດ, ພະແນກ, ຜູ້ໃຊ້, ບົດບາດ, ຜູ້ອະນຸມັດ.</p>
+        </div>
+        <div class="flow-step p2">
+          <div class="flow-badge">2</div>
+          <h3>ການຈັດຊື້</h3>
+          <p>ສະເໜີ &rarr; ສັ່ງຊື້ &rarr; ຮັບຂອງ. ຜູ້ສະໜອງ ແລະ ສິນຄ້າ.</p>
+        </div>
+        <div class="flow-step p3">
+          <div class="flow-badge">3</div>
+          <h3>ງົບປະມານ</h3>
+          <p>ກຳນົດເພດານໃຊ້ຈ່າຍ ແລະ ກົດການອະນຸມັດ.</p>
+        </div>
+        <div class="flow-step p4">
+          <div class="flow-badge">4</div>
+          <h3>ເອກະສານ</h3>
+          <p>ຈັດເກັບ, ຕິດຕາມສະຖານະ, ປະຫວັດການແກ້ໄຂ.</p>
+        </div>
+        <div class="flow-step p5">
+          <div class="flow-badge">5</div>
+          <h3>ລາຍງານ</h3>
+          <p>ມຸມມອງຜູ້ບໍລິຫານ ແລະ ສົ່ງອອກ Excel.</p>
+        </div>
       </div>
 
-      <div class="flow">
-        <article class="stage">
-          <div><div class="stage-no">1</div></div>
-          <div>
-            <h3>Foundation Setup</h3>
-            <p>Build the operating base before anyone can request, approve, buy, or receive goods.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>Company, department, position, and province setup</div>
-              <div class="step"><span>2</span>User, role, permission, and department assignment</div>
-              <div class="step"><span>3</span>Vendor, product, product unit, VAT, currency, bank, exchange rate</div>
-              <div class="step"><span>4</span>Budget account, budget item, and budget detail setup</div>
-              <div class="step"><span>5</span>Approval workflow, approval levels, and approver assignment</div>
-              <div class="step"><span>6</span>Company product quantity quota setup</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Control gate</b>
-            <ul>
-              <li>Approvers must be defined.</li>
-              <li>Department must have a budget.</li>
-              <li>Product quota must exist before request items are submitted.</li>
-              <li>Document workflow must be approved before transactions use it.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="stage">
-          <div><div class="stage-no">2</div></div>
-          <div>
-            <h3>Purchase Request</h3>
-            <p>The requester asks for goods or services, linked to department, document, quota, and budget context.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>Requester creates document and purchase request number</div>
-              <div class="step"><span>2</span>Select product quota and unit</div>
-              <div class="step"><span>3</span>Enter quantity, price, reason, and attachments</div>
-              <div class="step"><span>4</span>System checks department budget exists</div>
-              <div class="step"><span>5</span>System checks requested quantity against remaining quota</div>
-              <div class="step"><span>6</span>System opens approval request and notifies approver</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Control gate</b>
-            <ul>
-              <li>Request date must be valid.</li>
-              <li>Quota cannot be exceeded.</li>
-              <li>Department budget must exist.</li>
-              <li>Request cannot move to purchase order until approved.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="stage">
-          <div><div class="stage-no">3</div></div>
-          <div>
-            <h3>Purchase Request Approval</h3>
-            <p>The business confirms the request is needed, appropriate, and allowed before procurement work continues.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>Approver receives request notification</div>
-              <div class="step"><span>2</span>Approver reviews requester, department, items, quantity, and reason</div>
-              <div class="step"><span>3</span>Approver approves, rejects, or requests correction</div>
-              <div class="step"><span>4</span>Approved request becomes available for purchase order</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Decision point</b>
-            <ul>
-              <li>If approved: continue to purchase order.</li>
-              <li>If rejected: stop the procurement flow.</li>
-              <li>If correction is needed: requester updates and resubmits.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="stage">
-          <div><div class="stage-no">4</div></div>
-          <div>
-            <h3>Purchase Order</h3>
-            <p>Procurement converts an approved request into a supplier-facing order with vendor, price, VAT, bank, and budget details.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>Select approved purchase request</div>
-              <div class="step"><span>2</span>Create purchase order document and purchase order number</div>
-              <div class="step"><span>3</span>Copy approved request items into purchase order items</div>
-              <div class="step"><span>4</span>Set price, VAT, selected vendor, and vendor bank account</div>
-              <div class="step"><span>5</span>Attach supplier documents or quotation files when needed</div>
-              <div class="step"><span>6</span>Assign budget item for spending control</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Control gate</b>
-            <ul>
-              <li>Purchase request must already be approved.</li>
-              <li>Selected vendor cannot be duplicated for the same item.</li>
-              <li>Vendor bank account must belong to the selected vendor.</li>
-              <li>Budget item must be assigned before receipt/payment control.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="stage">
-          <div><div class="stage-no">5</div></div>
-          <div>
-            <h3>Purchase Order Approval</h3>
-            <p>The business confirms the selected vendor, pricing, VAT, and spending line before receiving goods.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>System opens purchase order approval</div>
-              <div class="step"><span>2</span>Approver reviews selected vendor and order value</div>
-              <div class="step"><span>3</span>Approver reviews budget item and supporting files</div>
-              <div class="step"><span>4</span>Approved purchase order becomes available for receipt</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Decision point</b>
-            <ul>
-              <li>If approved: continue to receipt.</li>
-              <li>If rejected: procurement must correct or stop the order.</li>
-              <li>If budget assignment is missing: finance/procurement must complete it.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="stage">
-          <div><div class="stage-no">6</div></div>
-          <div>
-            <h3>Receipt and Management Reporting</h3>
-            <p>Receiving records the delivered goods, payment currency, exchange rate, and final amount for visibility and reporting.</p>
-          </div>
-          <div>
-            <p class="mini-label">Workflow</p>
-            <div class="steps">
-              <div class="step"><span>1</span>Create receipt from approved purchase order</div>
-              <div class="step"><span>2</span>Select received purchase order items</div>
-              <div class="step"><span>3</span>System checks vendor bank account and exchange rate</div>
-              <div class="step"><span>4</span>System calculates payment total in budget currency</div>
-              <div class="step"><span>5</span>Receipt enters approval workflow</div>
-              <div class="step"><span>6</span>Management reviews company summary, budget status, requests, orders, and receipts</div>
-            </div>
-          </div>
-          <div class="gate">
-            <b>Control gate</b>
-            <ul>
-              <li>Purchase order must be approved before receipt.</li>
-              <li>Exchange rate must exist and be active.</li>
-              <li>Receipt should confirm actual received quantity.</li>
-              <li>Reports should show request, order, receipt, and budget status.</li>
-            </ul>
-          </div>
-        </article>
+      <div class="flow-arrows">
+        <div class="flow-arrow"></div>
       </div>
     </section>
 
+    <!-- PHASE CARDS -->
     <section>
-      <div class="section-title">
-        <h2>Who Does What</h2>
-        <p>This view helps management understand ownership. The system is not only screens; it is a controlled handoff between departments.</p>
-      </div>
+      <h2>ສິ່ງທີ່ຈະສ້າງ ໃນແຕ່ລະໄລຍະ</h2>
+      <div class="phase-grid">
 
-      <div class="swimlanes">
-        <article class="lane">
-          <h3>Requester / Department</h3>
-          <ul>
-            <li>Creates purchase request.</li>
-            <li>Provides reason, quantity, item detail, and supporting file.</li>
-            <li>Corrects rejected or returned requests.</li>
-            <li>Confirms business need before procurement starts.</li>
-          </ul>
+        <article class="phase-card p1">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <h3>ຕັ້ງຄ່າ &mdash; ຮາກຖານຂອງລະບົບ</h3>
+            <p class="phase-goal">ໃສ່ໂຄງສ້າງບໍລິສັດ ແລະ ຂໍ້ມູນພະນັກງານ ເຂົ້າໃນລະບົບ ກ່ອນເລີ່ມວຽກຕົວຈິງ.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະສ້າງ</dt>
+              <dd>
+                <ul>
+                  <li>ໜ້າເຂົ້າສູ່ລະບົບ ແລະ ຟັງຊັນກູ້ລະຫັດຜ່ານ.</li>
+                  <li>ຂໍ້ມູນບໍລິສັດ ແລະ ລາຍຊື່ສາຂາ (ພະແນກ).</li>
+                  <li>ລາຍຊື່ພະນັກງານ ພ້ອມບົດບາດ ແລະ ສິດການເຂົ້າເຖິງ.</li>
+                  <li>ຕັ້ງຄ່າຜູ້ເຊັນ &mdash; ເລືອກຜູ້ເຊັນຝ່າຍການເງິນ ແລະ ຜູ້ບໍລິຫານ.</li>
+                  <li>ໂປຣໄຟລ໌ຜູ້ໃຊ້ ແລະ ອັບໂຫລດລາຍເຊັນ.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>2</strong><span>ມື້</span></div>
         </article>
-        <article class="lane">
-          <h3>Approver / Management</h3>
-          <ul>
-            <li>Reviews purchase request.</li>
-            <li>Reviews purchase order value and vendor selection.</li>
-            <li>Reviews receipt where approval is required.</li>
-            <li>Uses reports to monitor budget and procurement movement.</li>
-          </ul>
+
+        <article class="phase-card p2">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <h3>ການຈັດຊື້ &mdash; ວຽກປະຈຳວັນ</h3>
+            <p class="phase-goal">ດຳເນີນຂັ້ນຕອນການຊື້ປະຈຳວັນຂອງບໍລິສັດ ຕັ້ງແຕ່ຕົ້ນຈົນຈົບ ໃນລະບົບໃໝ່.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະສ້າງ</dt>
+              <dd>
+                <ul>
+                  <li>ບັນຊີລາຍການສິນຄ້າ ແລະ ລາຍຊື່ຜູ້ສະໜອງ.</li>
+                  <li>ຟອມໃບສະເໜີຊື້ (ພະນັກງານສົ່ງໂດຍກົງໄປຫາທີມຈັດຊື້).</li>
+                  <li>ໜ້າຈໍສ້າງໃບສັ່ງຊື້ (ທີມຈັດຊື້).</li>
+                  <li>ຟອມຮັບສິນຄ້າ ພ້ອມການກວດສອບເທື່ອລະລາຍການ.</li>
+                  <li>ພິມ ແລະ ສົ່ງອອກ Excel ສຳລັບທຸກຟອມ.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>5</strong><span>ມື້</span></div>
         </article>
-        <article class="lane">
-          <h3>Procurement / Finance</h3>
-          <ul>
-            <li>Maintains vendors, products, VAT, currency, bank, and exchange rate.</li>
-            <li>Creates purchase orders from approved requests.</li>
-            <li>Selects vendor and vendor bank account.</li>
-            <li>Assigns budget item for spending control.</li>
-          </ul>
+
+        <article class="phase-card p3">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <h3>ງົບປະມານ ແລະ ການອະນຸມັດ &mdash; ການຄວບຄຸມ</h3>
+            <p class="phase-goal">ຮັກສາຄ່າໃຊ້ຈ່າຍໃຫ້ຢູ່ໃນເພດານທີ່ອະນຸມັດໄວ້. ໃຫ້ທຸກຄ່າໃຊ້ຈ່າຍ ຜ່ານຄົນທີ່ມີສິດເຊັນອະນຸມັດ.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະສ້າງ</dt>
+              <dd>
+                <ul>
+                  <li>ໜ້າຈໍຕັ້ງງົບປະມານ (ແຕ່ລະສາຂາ ແລະ ແຕ່ລະປະເພດ).</li>
+                  <li>ໜ້າຕັ້ງກົດການອະນຸມັດ (ການເງິນສຳລັບຍອດທຳມະດາ, ຜູ້ບໍລິຫານສຳລັບຍອດໃຫຍ່).</li>
+                  <li>ຟອມຂໍເພີ່ມງົບປະມານ ສຳລັບກໍລະນີສຸກເສີນ.</li>
+                  <li>ສະແດງງົບປະມານທີ່ເຫຼືອ ແບບ realtime ໃນທຸກຟອມຊື້.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>4</strong><span>ມື້</span></div>
         </article>
-        <article class="lane">
-          <h3>System Control</h3>
-          <ul>
-            <li>Blocks unapproved workflow setup.</li>
-            <li>Blocks request when quota is exceeded.</li>
-            <li>Blocks purchase order when purchase request is not approved.</li>
-            <li>Blocks receipt when purchase order is not approved.</li>
-          </ul>
+
+        <article class="phase-card p4">
+          <div class="phase-num">4</div>
+          <div class="phase-body">
+            <h3>ເອກະສານ &mdash; ການຈັດເກັບ</h3>
+            <p class="phase-goal">ໃຫ້ທຸກຟອມມີບ່ອນຈັດເກັບຖາວອນ ເພື່ອບໍລິສັດສາມາດຊອກຫາສິ່ງໃດກໍໄດ້ ໃນພຽງສອງສາມວິນາທີ.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະສ້າງ</dt>
+              <dd>
+                <ul>
+                  <li>ບັນຊີເອກະສານສ່ວນກາງ ພ້ອມຄົ້ນຫາ ແລະ ຕົວກອງ.</li>
+                  <li>ປ້າຍສະຖານະ (ກຳລັງລໍຖ້າ, ອະນຸມັດແລ້ວ, ປະຕິເສດ, ຍົກເລີກ).</li>
+                  <li>ອັບໂຫລດໄຟລ໌ແນບ (ສະແກນ, ຮູບຖ່າຍ, PDF).</li>
+                  <li>ບັນທຶກປະຫວັດການແກ້ໄຂ ສຳລັບທຸກເອກະສານ.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>2</strong><span>ມື້</span></div>
         </article>
+
+        <article class="phase-card p5">
+          <div class="phase-num">5</div>
+          <div class="phase-body">
+            <h3>ລາຍງານ &mdash; ມຸມມອງຂອງຜູ້ບໍລິຫານ</h3>
+            <p class="phase-goal">ໃຫ້ຜູ້ບໍລິຫານມີບ່ອນດຽວທີ່ເຫັນພາບລວມຂອງບໍລິສັດທັງໝົດ ແລະ ດຶງຕົວເລກອອກໄດ້ເມື່ອຕ້ອງການ.</p>
+            <dl class="phase-build">
+              <dt>ສິ່ງທີ່ຈະສ້າງ</dt>
+              <dd>
+                <ul>
+                  <li>ແດັດຊ໌ບອດສະຫຼຸບບໍລິສັດ (ຍອດໃຊ້ຈ່າຍ, ງົບປະມານທີ່ເຫຼືອ, ຜູ້ສະໜອງອັນດັບຕົ້ນ).</li>
+                  <li>ລາຍງານໃບສະເໜີຊື້, ໃບສັ່ງຊື້, ແລະ ໃບຮັບສິນຄ້າ.</li>
+                  <li>ດາວໂຫລດ Excel ສຳລັບທຸກລາຍງານ.</li>
+                  <li>ກອງຕາມຊ່ວງວັນທີ, ສາຂາ, ແລະ ພະນັກງານ.</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
+          <div class="phase-meta"><strong>3</strong><span>ມື້</span></div>
+        </article>
+
       </div>
     </section>
 
+    <!-- PROCUREMENT DETAIL -->
     <section>
-      <div class="section-title">
-        <h2>Real-World Fit Check</h2>
-        <p>This is the part to discuss with the boss. It separates what is already correct from what policy decisions may still be needed.</p>
+      <h2>ການຈັດຊື້ &mdash; ເຮັດວຽກແນວໃດ ເທື່ອລະຂັ້ນ</h2>
+      <div class="proc-intro">
+        <strong>ສາຍໂສ້ໃນປະໂຫຍກດຽວ:</strong> ພະນັກງານ <em>ສະເໜີຂໍຊື້</em> &nbsp;&rarr;&nbsp; ທີມຈັດຊື້ <em>ສັ່ງຊື້ຈາກຜູ້ສະໜອງ</em> &nbsp;&rarr;&nbsp; ສິນຄ້າ <em>ມາຮອດ ແລະ ຖືກກວດຮັບ</em>.
       </div>
 
-      <div class="validation-grid">
-        <article class="check-list good">
-          <h3>Correct Flow</h3>
-          <ul>
-            <li>Setup before transaction work is correct.</li>
-            <li>Purchase request before purchase order is correct.</li>
-            <li>Purchase order before receipt is correct.</li>
-            <li>Approval gates before each major movement are correct.</li>
-            <li>Budget and quota checks before spending are correct.</li>
-          </ul>
-        </article>
-        <article class="check-list watch">
-          <h3>Confirm With Boss</h3>
-          <ul>
-            <li>Should vendor comparison happen before purchase order or inside purchase order preparation?</li>
-            <li>Should receipt approval be required for every receipt or only above a value?</li>
-            <li>Should budget be reserved at purchase order approval or only counted when receipt is approved?</li>
-            <li>Should finance payment be a separate module after receipt?</li>
-          </ul>
-        </article>
-        <article class="check-list next">
-          <h3>Recommended Policy</h3>
-          <ul>
-            <li>Use purchase request approval to confirm business need.</li>
-            <li>Use purchase order approval to confirm vendor, price, and budget line.</li>
-            <li>Use receipt approval to confirm delivered goods and payment value.</li>
-            <li>Use reports to compare budget, ordered amount, received amount, and remaining balance.</li>
-          </ul>
-        </article>
+      <!-- ROLE LANES -->
+      <div class="role-lanes">
+        <div class="lane-header">
+          <div>ບົດບາດ &darr; / ຂັ້ນຕອນ &rarr;</div>
+          <div class="lh-a">A. ສະເໜີ</div>
+          <div class="lh-b">B. ສັ່ງຊື້</div>
+          <div class="lh-c">C. ຮັບສິນຄ້າ</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r1"></span> ພະນັກງານ (ຜູ້ສະເໜີ)</div>
+          <div class="role-cell r1">ກອກ ແລະ ສົ່ງໃບສະເໜີ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r3"></span> ທີມຈັດຊື້</div>
+          <div class="role-cell r3">ຮັບໃບສະເໜີ</div>
+          <div class="role-cell r3">ສ້າງ ແລະ ສົ່ງໃບສັ່ງຊື້</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r4"></span> ພະນັກງານຮັບສິນຄ້າ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell r4">ກວດຮັບສິນຄ້າ</div>
+        </div>
       </div>
+
+      <div class="stage-flow">
+
+        <!-- STAGE A -->
+        <article class="stage">
+          <div class="stage-num">A</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ A &mdash; ໃບສະເໜີຊື້</h3>
+              <span class="actor-badge r1">ພະນັກງານ</span>
+            </div>
+            <p class="stage-sub">ພະນັກງານສະເໜີສິ່ງທີ່ຕ້ອງການຊື້. ໃບສະເໜີຈະຖືກສົ່ງຕົງໄປຫາທີມຈັດຊື້ &mdash; ບໍ່ມີຂັ້ນຕອນຜູ້ຈັດການ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ພະນັກງານກອກຟອມ: ລາຍການສິນຄ້າ, ຜູ້ສະໜອງ, ງົບປະມານ. ງົບປະມານທີ່ເຫຼືອຈະຖືກສະແດງແບບ realtime.</li>
+                <li>ພະນັກງານສາມາດບັນທຶກເປັນຮ່າງ ແລະ ມາແກ້ໄຂຕໍ່ພາຍຫຼັງ.</li>
+                <li>ເມື່ອພ້ອມ ພະນັກງານກົດສົ່ງ. ໃບສະເໜີຈະໄປຢູ່ໃນກ່ອງຂໍ້ຄວາມຂອງທີມຈັດຊື້ທັນທີ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ໃບສະເໜີຊື້ໃໝ່</div>
+                  <div class="mock-row"><div class="mock-label">ພະແນກ</div><div class="mock-input filled">ປະຕິບັດການ</div></div>
+                  <div class="mock-row"><div class="mock-label">ຜູ້ສະໜອງ</div><div class="mock-input filled">ABC Trading</div></div>
+                  <div class="mock-row"><div class="mock-label">ງົບປະມານ</div><div class="mock-input filled">2026 ເຄື່ອງໃຊ້ສຳນັກງານ</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ລາຍການ</div><div>ຈຳນວນ</div><div>ລວມ</div></div>
+                    <div class="mt-row"><div>ເຈ້ຍ A4</div><div>20 ກ່ອງ</div><div>2,000,000</div></div>
+                    <div class="mt-row"><div>ໝຶກພິມ</div><div>3 ອັນ</div><div>1,500,000</div></div>
+                  </div>
+                  <div class="mock-budget"><span>ງົບປະມານທີ່ເຫຼືອ</span><span>18,500,000 ກີບ</span></div>
+                  <div class="mock-actions">
+                    <div class="mock-btn save">ສົ່ງ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ A</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ສົ່ງແລ້ວ</span> <span>ຍ້າຍໄປຂັ້ນ B. ທີມຈັດຊື້ຈະເຫັນ ແລະ ເລີ່ມສ້າງໃບສັ່ງຊື້.</span></div>
+                <div class="branch no"><span class="branch-tag">ຮ່າງ</span> <span>ຍັງຢູ່ກັບພະນັກງານ. ສາມາດແກ້ໄຂ ແລະ ສົ່ງພາຍຫຼັງໄດ້.</span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <!-- STAGE B -->
+        <article class="stage">
+          <div class="stage-num">B</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ B &mdash; ໃບສັ່ງຊື້</h3>
+              <span class="actor-badge r3">ທີມຈັດຊື້</span>
+            </div>
+            <p class="stage-sub">ທີມຈັດຊື້ປ່ຽນໃບສະເໜີທີ່ສົ່ງມາ ໃຫ້ກາຍເປັນໃບສັ່ງຊື້ຈິງ ແລະ ສົ່ງໄປຫາຜູ້ສະໜອງ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ທີມຈັດຊື້ປ່ຽນໃບສະເໜີທີ່ສົ່ງມາ ເປັນໃບສັ່ງຊື້ຈິງ ພ້ອມຜູ້ສະໜອງ ແລະ ລາຄາສຸດທ້າຍ.</li>
+                <li>ລະບົບອອກເລກໃຫ້ (ຕົວຢ່າງ <em>PO-2026-0001</em>) ແລະ ລັອກຍອດລວມ.</li>
+                <li>ໃບສັ່ງຊື້ຖືກພິມ ຫຼື ສົ່ງໃຫ້ຜູ້ສະໜອງ (PDF / ອີເມລ).</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ໃບສັ່ງຊື້ &mdash; PO-2026-0001</div>
+                  <div class="mock-row"><div class="mock-label">ຜູ້ສະໜອງ</div><div class="mock-input filled">ABC Trading Co. Ltd</div></div>
+                  <div class="mock-row"><div class="mock-label">ສົ່ງມອບ</div><div class="mock-input filled">2026-05-20</div></div>
+                  <div class="mock-row"><div class="mock-label">ພາສີ</div><div class="mock-input filled">VAT 10%</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ລາຍການ</div><div>ລາຄາ</div><div>ລວມ</div></div>
+                    <div class="mt-row"><div>ເຈ້ຍ A4 (20 ກ່ອງ)</div><div>100,000</div><div>2,200,000</div></div>
+                    <div class="mt-row"><div>ໝຶກພິມ (3 ອັນ)</div><div>500,000</div><div>1,650,000</div></div>
+                  </div>
+                  <div class="mock-budget"><span>ຍອດລວມ (ລວມ VAT)</span><span>3,850,000 ກີບ</span></div>
+                  <div class="mock-actions">
+                    <div class="mock-btn save">ບັນທຶກ</div>
+                    <div class="mock-btn send">ສົ່ງໃຫ້ຜູ້ສະໜອງ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ B</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ສົ່ງແລ້ວ</span> <span>ໃບສັ່ງຊື້ກຳລັງໄປຫາຜູ້ສະໜອງ. ລະບົບລໍຖ້າສິນຄ້າມາຮອດ.</span></div>
+                <div class="branch no"><span class="branch-tag">ຍົກເລີກ</span> <span>ຖ້າຜູ້ສະໜອງສົ່ງມອບບໍ່ໄດ້, ໃບສັ່ງຊື້ຈະຖືກຍົກເລີກ ແລະ ງົບປະມານຖືກປ່ອຍຄືນ.</span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <!-- STAGE C -->
+        <article class="stage">
+          <div class="stage-num">C</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ C &mdash; ໃບຮັບສິນຄ້າ</h3>
+              <span class="actor-badge r4">ພະນັກງານຮັບສິນຄ້າ</span>
+            </div>
+            <p class="stage-sub">ເມື່ອສິນຄ້າມາຮອດ ພະນັກງານຮັບສິນຄ້າຈະບັນທຶກສິ່ງທີ່ມາຮອດຈິງ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ພະນັກງານຮັບສິນຄ້າ ເລືອກໃບສັ່ງຊື້ ແລະ ປ້ອນສິ່ງທີ່ມາຮອດຈິງ (ຄົບ ຫຼື ບາງສ່ວນ).</li>
+                <li>ສາມາດແນບຮູບຖ່າຍ ຫຼື ໃບສົ່ງສິນຄ້າ.</li>
+                <li>ສາຍໂສ້ &mdash; ໃບສະເໜີ, ໃບສັ່ງຊື້, ໃບຮັບສິນຄ້າ &mdash; ຖືກເຊື່ອມຕໍ່ ແລະ ຄົ້ນຫາໄດ້.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ໃບຮັບສິນຄ້າ &mdash; ສຳລັບ PO-2026-0001</div>
+                  <div class="mock-row"><div class="mock-label">ຮັບໃນວັນ</div><div class="mock-input filled">2026-05-22</div></div>
+                  <div class="mock-row"><div class="mock-label">ໃບສົ່ງສິນຄ້າ</div><div class="mock-input filled">DN-559 (ມີຮູບຖ່າຍແນບ)</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ລາຍການ</div><div>ສັ່ງ</div><div>ໄດ້</div></div>
+                    <div class="mt-row"><div>ເຈ້ຍ A4</div><div>20</div><div>20</div></div>
+                    <div class="mt-row"><div>ໝຶກພິມ</div><div>3</div><div>2</div></div>
+                  </div>
+                  <div class="mock-budget" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;"><span>ສະຖານະ</span><span>ບາງສ່ວນ &mdash; ໝຶກພິມຍັງຂາດ 1</span></div>
+                  <div class="mock-actions">
+                    <div class="mock-btn save">ບັນທຶກ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ C</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ຄົບ</span> <span>ທຸກຢ່າງມາຮອດ. ໃບສັ່ງຊື້ຖືກປິດ. ສາຍໂສ້ສົມບູນ.</span></div>
+                <div class="branch no"><span class="branch-tag">ບາງສ່ວນ</span> <span>ມາຮອດພຽງບາງສ່ວນ. ໃບສັ່ງຊື້ຍັງເປີດໄວ້ ຈົນກວ່າສ່ວນທີ່ເຫຼືອຈະຖືກສົ່ງມາ (ຫຼື ຍົກເລີກ).</span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- STATUS LEGEND -->
+      <div class="proc-intro" style="margin-top:8px;">
+        <strong>ສະຖານະທີ່ຜູ້ບໍລິຫານຈະເຫັນ ໃນທຸກເອກະສານ:</strong>
+        <div class="pills-row">
+          <span class="status-pill pending">ກຳລັງລໍຖ້າ</span>
+          <span class="status-pill approved">ອະນຸມັດແລ້ວ</span>
+          <span class="status-pill rejected">ປະຕິເສດ</span>
+          <span class="status-pill cancelled">ຍົກເລີກ</span>
+        </div>
+      </div>
+
     </section>
 
-    <section>
-      <div class="section-title">
-        <h2>Recommended Development Timeline</h2>
-        <p>Build in the same order as the real-world flow so every later screen has the master data and controls it needs.</p>
+    <!-- BUDGET DETAIL -->
+    <section data-phase="3">
+      <h2>ງົບປະມານ ແລະ ການອະນຸມັດ &mdash; ການຄວບຄຸມເຮັດວຽກແນວໃດ</h2>
+      <div class="role-lanes">
+        <div class="lane-header">
+          <div>ບົດບາດ &darr; / ຂັ້ນຕອນ &rarr;</div>
+          <div>A. ກຳນົດ</div>
+          <div>B. ໃຊ້</div>
+          <div>C. ເພີ່ມເຕີມ</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r1"></span> ທີມການເງິນ</div>
+          <div class="role-cell r1">ຕັ້ງງົບປະມານ</div>
+          <div class="role-cell r1">ເຊັນຍອດທຳມະດາ</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r3"></span> ພະນັກງານ (ຜູ້ສະເໜີ)</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell r3">ໃຊ້ຈ່າຍໃນເພດານ</div>
+          <div class="role-cell r3">ຍື່ນຄຳຂໍເພີ່ມ</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r4"></span> ຜູ້ບໍລິຫານ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell r4">ເຊັນຍອດໃຫຍ່</div>
+          <div class="role-cell r4">ອະນຸມັດການເພີ່ມ</div>
+        </div>
       </div>
 
-      <div class="timeline">
-        <article class="milestone">
-          <span>Step 1</span>
-          <h3>Master setup</h3>
-          <p>Company, department, users, roles, vendors, products, currency, bank, VAT, exchange rates.</p>
+      <div class="stage-flow">
+
+        <article class="stage">
+          <div class="stage-num">A</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ A &mdash; ກຳນົດງົບປະມານ</h3>
+              <span class="actor-badge r1">ທີມການເງິນ</span>
+            </div>
+            <p class="stage-sub">ການເງິນກຳນົດເພດານໃຊ້ຈ່າຍປະຈຳປີ ສຳລັບແຕ່ລະປະເພດ ແລະ ສາຂາ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ການເງິນເລືອກປະເພດ ແລະ ສາຂາ (ຕົວຢ່າງ ເຄື່ອງໃຊ້ສຳນັກງານ, ສຳນັກງານໃຫຍ່).</li>
+                <li>ປ້ອນຍອດປະຈຳປີ ພ້ອມການແບ່ງລາຍໄຕມາດ (ຖ້າຕ້ອງການ).</li>
+                <li>ກົດເຜີຍແຜ່ &mdash; ງົບປະມານໃຊ້ງານໄດ້ ແລະ ທຸກຟອມຈະເຫັນ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ຕັ້ງງົບປະມານປະຈຳປີ</div>
+                  <div class="mock-row"><div class="mock-label">ປີ</div><div class="mock-input filled">2026</div></div>
+                  <div class="mock-row"><div class="mock-label">ປະເພດ</div><div class="mock-input filled">ເຄື່ອງໃຊ້ສຳນັກງານ</div></div>
+                  <div class="mock-row"><div class="mock-label">ສາຂາ</div><div class="mock-input filled">ສຳນັກງານໃຫຍ່ວຽງຈັນ</div></div>
+                  <div class="mock-row"><div class="mock-label">ຍອດ</div><div class="mock-input filled">50,000,000 ກີບ</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ໄຕມາດ</div><div>ເພດານ</div><div>ສະຖານະ</div></div>
+                    <div class="mt-row"><div>Q1</div><div>12.5 ລ້ານ</div><div>ໃຊ້ງານ</div></div>
+                    <div class="mt-row"><div>Q2</div><div>12.5 ລ້ານ</div><div>ໃຊ້ງານ</div></div>
+                  </div>
+                  <div class="mock-actions"><div class="mock-btn save">ເຜີຍແຜ່</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ A</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ເຜີຍແຜ່ແລ້ວ</span> <span>ງົບປະມານໃຊ້ງານໄດ້ ແລະ ທຸກຄົນສາມາດໃຊ້ຈ່າຍຕາມນັ້ນ.</span></div>
+                <div class="branch no"><span class="branch-tag">ຮ່າງ</span> <span>ບັນທຶກໄວ້ ແຕ່ຍັງບໍ່ທັນໃຊ້ງານ. ມີປະໂຫຍດສຳລັບການວາງແຜນປີໜ້າ.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article class="milestone">
-          <span>Step 2</span>
-          <h3>Control setup</h3>
-          <p>Budget accounts, budget items, quota, approval workflows, approval levels, approvers.</p>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <article class="stage">
+          <div class="stage-num">B</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ B &mdash; ໃຊ້ງົບປະມານ (ການສົ່ງໄປອະນຸມັດ)</h3>
+              <span class="actor-badge r1">ການເງິນ</span>
+              <span class="actor-badge r4">ຜູ້ບໍລິຫານ</span>
+            </div>
+            <p class="stage-sub">ທຸກຟອມການຊື້ສະແດງງົບປະມານທີ່ເຫຼືອອັດຕະໂນມັດ. ຍອດທຳມະດາໄປຫາການເງິນ. ຍອດໃຫຍ່ໄປຫາຜູ້ບໍລິຫານ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ຟອມສະແດງງົບປະມານທີ່ເຫຼືອແບບ realtime ແລະ ສົ່ງໄປຕາມຍອດ: ຕ່ຳກວ່າ 50 ລ້ານ ໄປຫາການເງິນ, 50 ລ້ານ ຫຼື ຫຼາຍກວ່າ ໄປຫາຜູ້ບໍລິຫານ.</li>
+                <li>ຜູ້ເຊັນໄດ້ຮັບແຈ້ງເຕືອນ (ອີເມລ ຫຼື ໃນແອັບ) ແລະ ອະນຸມັດໃນຄລິກດຽວ.</li>
+                <li>ງົບປະມານຖືກກັນໄວ້ເມື່ອອະນຸມັດ ແລະ ຫັກອອກເມື່ອສິນຄ້າມາຮອດ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ການສົ່ງໄປອະນຸມັດ &mdash; PR-2026-0001</div>
+                  <div class="mock-row"><div class="mock-label">ຍອດ</div><div class="mock-input filled">12,500,000 ກີບ</div></div>
+                  <div class="mock-row"><div class="mock-label">ກົດ</div><div class="mock-input filled">&lt; 50 ລ້ານ = ການເງິນ</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ຜູ້ອະນຸມັດ</div><div>ຂັ້ນ</div><div>ສະຖານະ</div></div>
+                    <div class="mt-row"><div>ນ. ເລຍ (ການເງິນ)</div><div>1</div><div>ກຳລັງລໍຖ້າ</div></div>
+                  </div>
+                  <div class="mock-budget"><span>ງົບປະມານທີ່ເຫຼືອ</span><span>37,500,000 ກີບ</span></div>
+                  <div class="mock-actions"><div class="mock-btn approve">ອະນຸມັດ</div><div class="mock-btn reject">ປະຕິເສດ</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ B</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ເຊັນແລ້ວ</span> <span>ຜູ້ເຊັນອະນຸມັດແລ້ວ. ໃບສະເໜີສາມາດກາຍເປັນໃບສັ່ງຊື້ໄດ້.</span></div>
+                <div class="branch no"><span class="branch-tag">ຖືກກັ້ນ</span> <span>ຜູ້ເຊັນປະຕິເສດ ຫຼື ງົບປະມານບໍ່ພຽງພໍ &mdash; ໃບສະເໜີຖືກກັ້ນຈົນກວ່າຈະແກ້ໄຂ ຫຼື ມີການເພີ່ມງົບ.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article class="milestone">
-          <span>Step 3</span>
-          <h3>Purchase request</h3>
-          <p>Request document, item entry, attachment, quota check, budget existence check, PR approval.</p>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <article class="stage">
+          <div class="stage-num">C</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ C &mdash; ເພີ່ມງົບປະມານ (ສຸກເສີນ)</h3>
+              <span class="actor-badge r3">ພະນັກງານ</span>
+              <span class="actor-badge r4">ຜູ້ບໍລິຫານ</span>
+            </div>
+            <p class="stage-sub">ເມື່ອງົບປະມານໝົດກ່ອນໝົດປີ, ພະນັກງານ (ຫຼື ການເງິນ) ຂໍໃຫ້ຜູ້ບໍລິຫານເພີ່ມງົບປະມານ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ພະນັກງານກອກຟອມຂໍເພີ່ມ: ປະເພດ, ຍອດເພີ່ມເຕີມ, ເຫດຜົນ.</li>
+                <li>ຜູ້ບໍລິຫານກວດ ແລະ ອະນຸມັດ ຫຼື ປະຕິເສດ ໃນຄລິກດຽວ.</li>
+                <li>ຖ້າອະນຸມັດ, ງົບປະມານເພີ່ມຂຶ້ນທັນທີ ແລະ ທຸກຄົນເຫັນເພດານໃໝ່.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ຄຳຂໍເພີ່ມງົບປະມານ</div>
+                  <div class="mock-row"><div class="mock-label">ປະເພດ</div><div class="mock-input filled">ອຸປະກອນ IT</div></div>
+                  <div class="mock-row"><div class="mock-label">ສາຂາ</div><div class="mock-input filled">ສຳນັກງານໃຫຍ່ວຽງຈັນ</div></div>
+                  <div class="mock-row"><div class="mock-label">ປັດຈຸບັນ</div><div class="mock-input filled">20,000,000 ກີບ</div></div>
+                  <div class="mock-row"><div class="mock-label">ເພີ່ມ</div><div class="mock-input filled">+ 10,000,000 ກີບ</div></div>
+                  <div class="mock-row"><div class="mock-label">ເຫດຜົນ</div><div class="mock-input filled">ປ່ຽນແທນເຊີເວີທີ່ເສຍ</div></div>
+                  <div class="mock-actions"><div class="mock-btn save">ສົ່ງຫາຜູ້ບໍລິຫານ</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດ ໃນທ້າຍຂັ້ນ C</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ອະນຸມັດ</span> <span>ງົບປະມານເພີ່ມຂຶ້ນທັນທີ. ສາມາດໃຊ້ຈ່າຍຕໍ່ໄດ້.</span></div>
+                <div class="branch no"><span class="branch-tag">ປະຕິເສດ</span> <span>ງົບປະມານຄົງເດີມ. ທີມຕ້ອງລໍຖ້າ ຫຼື ປັບແຜນໃໝ່.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article class="milestone">
-          <span>Step 4</span>
-          <h3>Purchase order</h3>
-          <p>Approved PR conversion, vendor selection, VAT, price, vendor bank account, budget item assignment.</p>
+
+      </div>
+
+      <div class="proc-intro" style="margin-top: 8px;">
+        <strong>ສະຖານະທີ່ຜູ້ບໍລິຫານຈະເຫັນ ໃນແຕ່ລະງົບປະມານ:</strong>
+        <div class="pills-row">
+          <span class="status-pill approved">ໃຊ້ງານ</span>
+          <span class="status-pill pending">ກັນໄວ້</span>
+          <span class="status-pill cancelled">ຮ່າງ</span>
+          <span class="status-pill rejected">ເກີນເພດານ</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- DOCUMENTS DETAIL -->
+    <section data-phase="4">
+      <h2>ເອກະສານ &mdash; ການຈັດເກັບເຮັດວຽກແນວໃດ</h2>
+      <div class="role-lanes">
+        <div class="lane-header">
+          <div>ບົດບາດ &darr; / ຂັ້ນຕອນ &rarr;</div>
+          <div>A. ແນບ</div>
+          <div>B. ຄົ້ນຫາ</div>
+          <div>C. ຕິດຕາມ</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r1"></span> ພະນັກງານທົ່ວໄປ (ເຈົ້າຂອງ)</div>
+          <div class="role-cell r1">ອັບໂຫລດໄຟລ໌</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r2"></span> ຜູ້ມີສິດເຂົ້າເຖິງ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell r2">ຄົ້ນຫາ ແລະ ເປີດ</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r3"></span> ຜູ້ບໍລິຫານ / ຜູ້ກວດສອບ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell r3">ອ່ານໄດ້ທຸກຢ່າງ</div>
+          <div class="role-cell r3">ອ່ານປະຫວັດທັງໝົດ</div>
+        </div>
+
+        <div class="role-lane">
+          <div class="role-name"><span class="role-dot r4"></span> ຜູ້ດູແລລະບົບ</div>
+          <div class="role-cell r4">ກຳນົດປະເພດ ແລະ ຂອບເຂດ</div>
+          <div class="role-cell idle">&mdash;</div>
+          <div class="role-cell idle">&mdash;</div>
+        </div>
+      </div>
+
+      <div class="stage-flow">
+
+        <article class="stage">
+          <div class="stage-num">A</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ A &mdash; ແນບ</h3>
+              <span class="actor-badge r1">ພະນັກງານທົ່ວໄປ</span>
+            </div>
+            <p class="stage-sub">ໄຟລ໌ຖືກເພີ່ມເມື່ອພະນັກງານກອກຟອມໃດກໍໄດ້ &mdash; ໃບສະເໜີລາຄາ, ສະແກນ, ຮູບຖ່າຍ, ໃບສົ່ງສິນຄ້າ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ຂະນະທີ່ກອກຟອມ ພະນັກງານກົດ <em>ແນບໄຟລ໌</em>.</li>
+                <li>ເລືອກ PDF, ຮູບຖ່າຍ, Word, ຫຼື Excel ຈາກຄອມ ຫຼື ໂທລະສັບ &mdash; ມີໝາຍເຫດໄດ້.</li>
+                <li>ເມື່ອບັນທຶກຟອມແລ້ວ ໄຟລ໌ຖືກລັອກກັບຟອມໄວ້ຕະຫຼອດ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ໄຟລ໌ແນບ &mdash; PR-2026-0001</div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ໄຟລ໌</div><div>ຂະໜາດ</div><div>ໝາຍເຫດ</div></div>
+                    <div class="mt-row"><div>quote-v2.pdf</div><div>820 KB</div><div>ໃບສະເໜີລາຄາ</div></div>
+                    <div class="mt-row"><div>photo.jpg</div><div>1.2 MB</div><div>ຮູບຕົວຢ່າງ</div></div>
+                  </div>
+                  <div class="mock-row"><div class="mock-label">ເພີ່ມໄຟລ໌</div><div class="mock-input"></div></div>
+                  <div class="mock-actions"><div class="mock-btn save">ອັບໂຫລດ</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດໃນລະຫວ່າງການແນບ</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ຮັບແລ້ວ</span> <span>ປະເພດ ແລະ ຂະໜາດໄຟລ໌ຖືກຕ້ອງ. ໄຟລ໌ຖືກບັນທຶກກັບຟອມ.</span></div>
+                <div class="branch no"><span class="branch-tag">ຖືກກັ້ນ</span> <span>ປະເພດໄຟລ໌ບໍ່ຖືກ ຫຼື ໃຫຍ່ເກີນ. ພະນັກງານເຫັນຂໍ້ຄວາມຊັດເຈນ ແລະ ລອງໃໝ່ໄດ້.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article class="milestone">
-          <span>Step 5</span>
-          <h3>Receipt</h3>
-          <p>Approved PO receiving, exchange rate, payment amount, receipt approval, document record.</p>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <article class="stage">
+          <div class="stage-num">B</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ B &mdash; ຄົ້ນຫາ</h3>
+              <span class="actor-badge r2">ພະນັກງານທີ່ມີສິດ</span>
+              <span class="actor-badge r3">ຜູ້ບໍລິຫານ</span>
+            </div>
+            <p class="stage-sub">ບັນຊີຄົ້ນຫາສ່ວນກາງ ພ້ອມຕົວກອງ. ຜູ້ມີສິດສາມາດຊອກຫາສິ່ງໃດກໍໄດ້ ໃນພຽງຊົ່ວວິນາທີ.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ຜູ້ໃຊ້ເປີດບັນຊີສ່ວນກາງ ແລະ ຄົ້ນຫາຕາມເລກ, ຜູ້ສະໜອງ, ຫຼື ຂໍ້ຄວາມ.</li>
+                <li>ກອງຕາມວັນທີ, ສາຂາ, ປະເພດ, ຫຼື ສະຖານະ.</li>
+                <li>ກົດແຖວໃດກໍໄດ້ ເພື່ອເປີດຟອມ ແລະ ໄຟລ໌ຂອງມັນ. ສົ່ງອອກ Excel ໃນຄລິກດຽວ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ຄົ້ນຫາເອກະສານ</div>
+                  <div class="mock-row"><div class="mock-label">ຄົ້ນຫາ</div><div class="mock-input filled">"ໝຶກພິມ"</div></div>
+                  <div class="mock-row"><div class="mock-label">ສະຖານະ</div><div class="mock-input filled">ອະນຸມັດແລ້ວ</div></div>
+                  <div class="mock-row"><div class="mock-label">ວັນທີ</div><div class="mock-input filled">2026-05-01 &rarr; 2026-05-31</div></div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ເລກ</div><div>ປະເພດ</div><div>ສະຖານະ</div></div>
+                    <div class="mt-row"><div>PR-2026-0001</div><div>ໃບສະເໜີ</div><div>ອະນຸມັດແລ້ວ</div></div>
+                    <div class="mt-row"><div>PO-2026-0001</div><div>ໃບສັ່ງຊື້</div><div>ອະນຸມັດແລ້ວ</div></div>
+                    <div class="mt-row"><div>GR-2026-0001</div><div>ໃບຮັບສິນຄ້າ</div><div>ບາງສ່ວນ</div></div>
+                  </div>
+                  <div class="mock-actions"><div class="mock-btn save">ສົ່ງອອກ Excel</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ສິ່ງທີ່ອາດເກີດເມື່ອຄົ້ນຫາ</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ພົບ</span> <span>ສະແດງເອກະສານທີ່ກົງກັບການຄົ້ນຫາ. ຜູ້ໃຊ້ເປີດເບິ່ງ ແລະ ເຫັນໄຟລ໌ຂອງມັນ.</span></div>
+                <div class="branch no"><span class="branch-tag">ບໍ່ພົບ</span> <span>ບໍ່ມີເອກະສານກົງກັນ. ຜູ້ໃຊ້ປ່ຽນຕົວກອງ ຫຼື ຂໍສິດກວ້າງຂຶ້ນຖ້າຈຳເປັນ.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
-        <article class="milestone">
-          <span>Step 6</span>
-          <h3>Reports</h3>
-          <p>Company summary and budget status, purchase request report, purchase order report, receipt report.</p>
+
+        <div class="stage-arrow">&darr;</div>
+
+        <article class="stage">
+          <div class="stage-num">C</div>
+          <div>
+            <div class="stage-head">
+              <h3>ຂັ້ນ C &mdash; ຕິດຕາມ (ປະຫວັດການແກ້ໄຂ)</h3>
+              <span class="actor-badge r3">ຜູ້ບໍລິຫານ / ຜູ້ກວດສອບ</span>
+            </div>
+            <p class="stage-sub">ທຸກການແກ້ໄຂຂອງທຸກເອກະສານ ຖືກບັນທຶກ. ບໍ່ມີໃຜແອບແກ້ໄດ້.</p>
+
+            <div class="stage-body-grid">
+              <ol class="step-list">
+                <li>ເປີດເອກະສານໃດກໍໄດ້ ແລ້ວກົດແທັບ <em>ປະຫວັດ</em>.</li>
+                <li>ເຫັນທຸກການກະທຳ ພ້ອມຄົນເຮັດ, ເວລາ, ແລະ ສິ່ງທີ່ຖືກປ່ຽນ.</li>
+                <li>ບັນຊີສາມາດພິມ ຫຼື ສົ່ງອອກໄດ້ ທຸກເວລາ ສຳລັບການກວດສອບ.</li>
+              </ol>
+
+              <div class="screen">
+                <div class="screen-bar"><span></span><span></span><span></span></div>
+                <div class="screen-body">
+                  <div class="mock-title">ປະຫວັດ &mdash; PR-2026-0001</div>
+                  <div class="mock-table">
+                    <div class="mt-row mt-head"><div>ເວລາ</div><div>ຄົນ</div><div>ການກະທຳ</div></div>
+                    <div class="mt-row"><div>05-01 09:14</div><div>ມະລີ (ພະນັກງານ)</div><div>ສ້າງ</div></div>
+                    <div class="mt-row"><div>05-01 09:18</div><div>ມະລີ (ພະນັກງານ)</div><div>ແນບ quote-v2.pdf</div></div>
+                    <div class="mt-row"><div>05-02 11:02</div><div>ເລຍ (ການເງິນ)</div><div>ອະນຸມັດ</div></div>
+                    <div class="mt-row"><div>05-03 08:30</div><div>ຈັດຊື້</div><div>ເຊື່ອມຫາ PO-2026-0001</div></div>
+                  </div>
+                  <div class="mock-actions"><div class="mock-btn save">ສົ່ງອອກ</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="decision">
+              <div class="decision-title">ປະຫວັດປ້ອງກັນຫຍັງ</div>
+              <div class="branches">
+                <div class="branch yes"><span class="branch-tag">ຊັດເຈນ</span> <span>ຜູ້ບໍລິຫານສາມາດກວດສອບໄດ້ວ່າ ໃຜເຮັດຫຍັງເມື່ອໃດ. ຄວາມໄວ້ວາງໃຈມີໃນຕົວ.</span></div>
+                <div class="branch no"><span class="branch-tag">ຈຳກັດ</span> <span>ການກະທຳບາງຢ່າງ (ເຊັ່ນ ແກ້ໄຂລາຄາຫຼັງອະນຸມັດ) ຖືກກັ້ນ, ບໍ່ພຽງແຕ່ບັນທຶກ. ບໍ່ມີໃຜຂຽນປະຫວັດໃໝ່ໄດ້.</span></div>
+              </div>
+            </div>
+          </div>
         </article>
+
+      </div>
+
+      <div class="proc-intro" style="margin-top: 8px;">
+        <strong>ປ້າຍສະຖານະຄືກັນ ປະກົດຢູ່ທຸກເອກະສານ:</strong>
+        <div class="pills-row">
+          <span class="status-pill pending">ກຳລັງລໍຖ້າ</span>
+          <span class="status-pill approved">ອະນຸມັດແລ້ວ</span>
+          <span class="status-pill rejected">ປະຕິເສດ</span>
+          <span class="status-pill cancelled">ຍົກເລີກ</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TIMELINE -->
+    <section>
+      <h2>ຕາຕະລາງເວລາ</h2>
+      <div class="gantt">
+        <div class="gantt-header">
+          <div>ໄລຍະ</div>
+          <div>ມ.1</div><div>ມ.2</div><div>ມ.3</div><div>ມ.4</div><div>ມ.5</div><div>ມ.6</div><div>ມ.7</div>
+          <div>ມ.8</div><div>ມ.9</div><div>ມ.10</div><div>ມ.11</div><div>ມ.12</div><div>ມ.13</div><div>ມ.14</div>
+        </div>
+
+        <div class="gantt-row" data-range="ມ.1 – ມ.2">
+          <div class="gantt-label">1. ຕັ້ງຄ່າ</div>
+          <div class="gantt-bar p1" style="grid-column: 2 / span 2;">2 ມື້</div>
+          <div class="gantt-cell" style="grid-column: 4 / span 12;"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ມ.3 – ມ.7">
+          <div class="gantt-label">2. ການຈັດຊື້</div>
+          <div class="gantt-cell" style="grid-column: 2 / span 2;"></div>
+          <div class="gantt-bar p2" style="grid-column: 4 / span 5;">5 ມື້</div>
+          <div class="gantt-cell" style="grid-column: 9 / span 7;"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ມ.5 – ມ.8">
+          <div class="gantt-label">3. ງົບປະມານ ແລະ ການອະນຸມັດ</div>
+          <div class="gantt-cell" style="grid-column: 2 / span 4;"></div>
+          <div class="gantt-bar p3" style="grid-column: 6 / span 4;">4 ມື້</div>
+          <div class="gantt-cell" style="grid-column: 10 / span 6;"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ມ.9 – ມ.10">
+          <div class="gantt-label">4. ເອກະສານ</div>
+          <div class="gantt-cell" style="grid-column: 2 / span 8;"></div>
+          <div class="gantt-bar p4" style="grid-column: 10 / span 2;">2 ມື້</div>
+          <div class="gantt-cell" style="grid-column: 12 / span 4;"></div>
+        </div>
+
+        <div class="gantt-row" data-range="ມ.11 – ມ.13">
+          <div class="gantt-label">5. ລາຍງານ</div>
+          <div class="gantt-cell" style="grid-column: 2 / span 10;"></div>
+          <div class="gantt-bar p5" style="grid-column: 12 / span 3;">3 ມື້</div>
+        </div>
+      </div>
+
+      <div class="gantt-summary">
+        <div class="summary-card"><strong>ມື້ 1</strong><span>ເລີ່ມໂຄງການ</span></div>
+        <div class="summary-card"><strong>ມື້ 7</strong><span>ການຈັດຊື້ ໃຊ້ງານ (ທົດສອບພາຍໃນ)</span></div>
+        <div class="summary-card"><strong>ມື້ 8</strong><span>ກົດການອະນຸມັດໃຊ້ງານ</span></div>
+        <div class="summary-card"><strong>ມື້ 14</strong><span>ເປີດໃຊ້ງານຈິງ</span></div>
       </div>
     </section>
 
     <footer>
-      <span>HAL ERP deep development workflow</span>
-      <span>Prepared for management discussion</span>
+      <span>ສະບັບ <strong>v1 ຮ່າງ</strong> &mdash; ວັນທີ <strong>2026-05-06</strong></span>
     </footer>
+
   </div>
 </body>
 </html>
