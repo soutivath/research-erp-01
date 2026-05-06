@@ -1086,16 +1086,66 @@
 
     /* PRINT (PDF) */
     @media print {
-      body { background: #fff; }
-      .page { width: 100%; margin: 0; box-shadow: none; border-radius: 0; }
-      .cover { padding: 36px 32px; }
-      section { padding: 32px; break-inside: avoid; }
-      .phase-card, .gantt, .risk-card, .flow-step, .chip, .summary-card {
-        box-shadow: none; break-inside: avoid;
+      @page { size: A4; margin: 12mm; }
+
+      *, *::before, *::after {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
       }
-      .flow-arrow { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-      h1 { font-size: 32px; }
-      h2 { font-size: 20px; }
+
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
+      .cover { padding: 28px 24px; border-radius: 0; }
+      section { padding: 22px 24px; break-inside: auto; }
+
+      h1 { font-size: 26px; }
+      h2 { font-size: 18px; page-break-after: avoid; break-after: avoid; }
+      h3 { font-size: 14px; page-break-after: avoid; break-after: avoid; }
+
+      /* Phase cards: lock the meta column to a fixed width so the grid
+         survives Chrome's print engine. */
+      .phase-card {
+        grid-template-columns: 64px minmax(0, 1fr) 96px;
+        gap: 16px;
+        padding: 18px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .phase-num {
+        width: 64px; height: 64px;
+        font-size: 30px;
+        border-radius: 10px;
+      }
+      .phase-body h3 { font-size: 16px; }
+      .phase-goal { font-size: 13px; margin-bottom: 8px; }
+      .phase-build ul { font-size: 13px; }
+      .phase-meta {
+        min-width: 0;
+        width: 96px;
+        padding: 10px 12px;
+        text-align: center;
+      }
+      .phase-meta strong { font-size: 22px; }
+      .phase-meta span { font-size: 11px; margin-top: 2px; }
+
+      /* Keep small visual blocks together — never split mid-card */
+      .flow-step,
+      .chip,
+      .summary-card,
+      .risk-card,
+      .stage,
+      .role-lane,
+      .lane-header,
+      .gantt-row,
+      .gantt-header,
+      .config-item,
+      .screen,
+      .mock-table,
+      .actor-badge {
+        box-shadow: none;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
     }
   </style>
 </head>
@@ -1267,9 +1317,6 @@
     <!-- PROCUREMENT DETAIL -->
     <section>
       <h2>ການຈັດຊື້ &mdash; ເຮັດວຽກແນວໃດ ເທື່ອລະຂັ້ນ</h2>
-      <div class="proc-intro">
-        <strong>ສາຍໂສ້ໃນປະໂຫຍກດຽວ:</strong> ພະນັກງານ <em>ສະເໜີຂໍຊື້</em> &nbsp;&rarr;&nbsp; ທີມຈັດຊື້ <em>ສັ່ງຊື້ຈາກຜູ້ສະໜອງ</em> &nbsp;&rarr;&nbsp; ສິນຄ້າ <em>ມາຮອດ ແລະ ຖືກກວດຮັບ</em>.
-      </div>
 
       <!-- ROLE LANES -->
       <div class="role-lanes">
